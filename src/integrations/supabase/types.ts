@@ -14,16 +14,170 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      agencies: {
+        Row: {
+          activo: boolean
+          bank_id: number | null
+          created_at: string
+          id: number
+          name: string
+          phone: string
+          porcentaje: number
+          rif: string
+          updated_at: string
+        }
+        Insert: {
+          activo?: boolean
+          bank_id?: number | null
+          created_at?: string
+          id?: number
+          name: string
+          phone?: string
+          porcentaje?: number
+          rif?: string
+          updated_at?: string
+        }
+        Update: {
+          activo?: boolean
+          bank_id?: number | null
+          created_at?: string
+          id?: number
+          name?: string
+          phone?: string
+          porcentaje?: number
+          rif?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agencies_bank_id_fkey"
+            columns: ["bank_id"]
+            isOneToOne: false
+            referencedRelation: "banks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      banks: {
+        Row: {
+          activo: boolean
+          created_at: string
+          id: number
+          name: string
+        }
+        Insert: {
+          activo?: boolean
+          created_at?: string
+          id?: number
+          name: string
+        }
+        Update: {
+          activo?: boolean
+          created_at?: string
+          id?: number
+          name?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          agency_id: number | null
+          balance: number
+          bank_id: number | null
+          block_balance: number
+          created_at: string
+          email: string
+          id: string
+          identity_card: string | null
+          name: string
+          number_account: string | null
+          phone: string | null
+          pseudonimo: string | null
+          updated_at: string
+        }
+        Insert: {
+          agency_id?: number | null
+          balance?: number
+          bank_id?: number | null
+          block_balance?: number
+          created_at?: string
+          email: string
+          id: string
+          identity_card?: string | null
+          name?: string
+          number_account?: string | null
+          phone?: string | null
+          pseudonimo?: string | null
+          updated_at?: string
+        }
+        Update: {
+          agency_id?: number | null
+          balance?: number
+          bank_id?: number | null
+          block_balance?: number
+          created_at?: string
+          email?: string
+          id?: string
+          identity_card?: string | null
+          name?: string
+          number_account?: string | null
+          phone?: string | null
+          pseudonimo?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_bank_id_fkey"
+            columns: ["bank_id"]
+            isOneToOne: false
+            referencedRelation: "banks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "agency" | "player"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +304,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "agency", "player"],
+    },
   },
 } as const
