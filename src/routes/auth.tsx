@@ -106,17 +106,32 @@ const signUpSchema = z.object({
   name: z.string().trim().min(2, "Nombre muy corto").max(100),
   email: z.string().trim().email("Email inválido").max(255),
   password: z.string().min(6, "Mínimo 6 caracteres").max(72),
+  agencyId: z.string().min(1, "Selecciona una agencia"),
 });
 
 function SignUpForm({ onSuccess }: { onSuccess: () => void }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [agencyId, setAgencyId] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const { data: agencies = [], isLoading: loadingAgencies } = useQuery({
+    queryKey: ["agencies-public"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("agencies")
+        .select("id,name")
+        .eq("activo", true)
+        .order("name");
+      if (error) throw error;
+      return data as { id: number; name: string }[];
+    },
+  });
 
   const handle = async (e: React.FormEvent) => {
     e.preventDefault();
-    const parsed = signUpSchema.safeParse({ name, email, password });
+    const parsed = signUpSchema.safeParse({ name, email, password, agencyId });
     if (!parsed.success) { toast.error(parsed.error.issues[0].message); return; }
     setLoading(true);
     const { error } = await supabase.auth.signUp({
@@ -124,7 +139,7 @@ function SignUpForm({ onSuccess }: { onSuccess: () => void }) {
       password: parsed.data.password,
       options: {
         emailRedirectTo: window.location.origin,
-        data: { name: parsed.data.name },
+        data: { name: parsed.data.name, agency_id: parsed.data.agencyId },
       },
     });
     setLoading(false);
@@ -146,6 +161,19 @@ function SignUpForm({ onSuccess }: { onSuccess: () => void }) {
       <div className="space-y-2">
         <Label htmlFor="su-pass">Contraseña</Label>
         <Input id="su-pass" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="su-agency">Agencia</Label>
+        <Select value={agencyId} onValueChange={setAgencyId}>
+          <SelectTrigger id="su-agency">
+            <SelectValue placeholder={loadingAgencies ? "Cargando agencias..." : "Selecciona tu agencia"} />
+          </SelectTrigger>
+          <SelectContent>
+            {agencies.map((a) => (
+              <SelectItem key={a.id} value={String(a.id)}>{a.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
       <Button type="submit" className="w-full" disabled={loading}>
         {loading ? "Creando..." : "Crear cuenta"}
