@@ -13,7 +13,10 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedMyDepositsRouteImport } from './routes/_authenticated/my-deposits'
+import { Route as AuthenticatedDepositRouteImport } from './routes/_authenticated/deposit'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedAgencyDepositsRouteImport } from './routes/_authenticated/agency/deposits'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
 import { Route as AuthenticatedAdminAgenciesRouteImport } from './routes/_authenticated/admin/agencies'
 
@@ -36,11 +39,27 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedMyDepositsRoute = AuthenticatedMyDepositsRouteImport.update({
+  id: '/my-deposits',
+  path: '/my-deposits',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDepositRoute = AuthenticatedDepositRouteImport.update({
+  id: '/deposit',
+  path: '/deposit',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAgencyDepositsRoute =
+  AuthenticatedAgencyDepositsRouteImport.update({
+    id: '/agency/deposits',
+    path: '/agency/deposits',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
   id: '/admin/users',
   path: '/admin/users',
@@ -58,16 +77,22 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/deposit': typeof AuthenticatedDepositRoute
+  '/my-deposits': typeof AuthenticatedMyDepositsRoute
   '/admin/agencies': typeof AuthenticatedAdminAgenciesRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/agency/deposits': typeof AuthenticatedAgencyDepositsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/deposit': typeof AuthenticatedDepositRoute
+  '/my-deposits': typeof AuthenticatedMyDepositsRoute
   '/admin/agencies': typeof AuthenticatedAdminAgenciesRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/agency/deposits': typeof AuthenticatedAgencyDepositsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -76,8 +101,11 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/deposit': typeof AuthenticatedDepositRoute
+  '/_authenticated/my-deposits': typeof AuthenticatedMyDepositsRoute
   '/_authenticated/admin/agencies': typeof AuthenticatedAdminAgenciesRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/_authenticated/agency/deposits': typeof AuthenticatedAgencyDepositsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -86,16 +114,22 @@ export interface FileRouteTypes {
     | '/auth'
     | '/reset-password'
     | '/dashboard'
+    | '/deposit'
+    | '/my-deposits'
     | '/admin/agencies'
     | '/admin/users'
+    | '/agency/deposits'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/reset-password'
     | '/dashboard'
+    | '/deposit'
+    | '/my-deposits'
     | '/admin/agencies'
     | '/admin/users'
+    | '/agency/deposits'
   id:
     | '__root__'
     | '/'
@@ -103,8 +137,11 @@ export interface FileRouteTypes {
     | '/auth'
     | '/reset-password'
     | '/_authenticated/dashboard'
+    | '/_authenticated/deposit'
+    | '/_authenticated/my-deposits'
     | '/_authenticated/admin/agencies'
     | '/_authenticated/admin/users'
+    | '/_authenticated/agency/deposits'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -144,11 +181,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/my-deposits': {
+      id: '/_authenticated/my-deposits'
+      path: '/my-deposits'
+      fullPath: '/my-deposits'
+      preLoaderRoute: typeof AuthenticatedMyDepositsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/deposit': {
+      id: '/_authenticated/deposit'
+      path: '/deposit'
+      fullPath: '/deposit'
+      preLoaderRoute: typeof AuthenticatedDepositRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/agency/deposits': {
+      id: '/_authenticated/agency/deposits'
+      path: '/agency/deposits'
+      fullPath: '/agency/deposits'
+      preLoaderRoute: typeof AuthenticatedAgencyDepositsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/users': {
@@ -170,14 +228,20 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDepositRoute: typeof AuthenticatedDepositRoute
+  AuthenticatedMyDepositsRoute: typeof AuthenticatedMyDepositsRoute
   AuthenticatedAdminAgenciesRoute: typeof AuthenticatedAdminAgenciesRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
+  AuthenticatedAgencyDepositsRoute: typeof AuthenticatedAgencyDepositsRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDepositRoute: AuthenticatedDepositRoute,
+  AuthenticatedMyDepositsRoute: AuthenticatedMyDepositsRoute,
   AuthenticatedAdminAgenciesRoute: AuthenticatedAdminAgenciesRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
+  AuthenticatedAgencyDepositsRoute: AuthenticatedAgencyDepositsRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
