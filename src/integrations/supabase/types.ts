@@ -142,6 +142,69 @@ export type Database = {
           },
         ]
       }
+      transfers: {
+        Row: {
+          agency_id: number
+          amount: number
+          bank_id: number | null
+          capture_url: string | null
+          created_at: string
+          id: string
+          observations: string | null
+          reference: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["transfer_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          agency_id: number
+          amount: number
+          bank_id?: number | null
+          capture_url?: string | null
+          created_at?: string
+          id?: string
+          observations?: string | null
+          reference: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["transfer_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          agency_id?: number
+          amount?: number
+          bank_id?: number | null
+          capture_url?: string | null
+          created_at?: string
+          id?: string
+          observations?: string | null
+          reference?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["transfer_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transfers_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transfers_bank_id_fkey"
+            columns: ["bank_id"]
+            isOneToOne: false
+            referencedRelation: "banks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -178,6 +241,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "agency" | "player"
+      transfer_status: "pendiente" | "aprobado" | "rechazado"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -306,6 +370,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "agency", "player"],
+      transfer_status: ["pendiente", "aprobado", "rechazado"],
     },
   },
 } as const
