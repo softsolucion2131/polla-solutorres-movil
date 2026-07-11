@@ -226,6 +226,75 @@ export type Database = {
         }
         Relationships: []
       }
+      withdrawals: {
+        Row: {
+          account_holder: string | null
+          account_number: string
+          agency_id: number | null
+          amount: number
+          bank_id: number | null
+          created_at: string
+          id: string
+          identity_card: string | null
+          observations: string | null
+          reference_payment: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["withdrawal_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_holder?: string | null
+          account_number: string
+          agency_id?: number | null
+          amount: number
+          bank_id?: number | null
+          created_at?: string
+          id?: string
+          identity_card?: string | null
+          observations?: string | null
+          reference_payment?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["withdrawal_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_holder?: string | null
+          account_number?: string
+          agency_id?: number | null
+          amount?: number
+          bank_id?: number | null
+          created_at?: string
+          id?: string
+          identity_card?: string | null
+          observations?: string | null
+          reference_payment?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["withdrawal_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "withdrawals_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "withdrawals_bank_id_fkey"
+            columns: ["bank_id"]
+            isOneToOne: false
+            referencedRelation: "banks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -242,6 +311,7 @@ export type Database = {
     Enums: {
       app_role: "admin" | "agency" | "player"
       transfer_status: "pendiente" | "aprobado" | "rechazado"
+      withdrawal_status: "pendiente" | "aprobado" | "rechazado"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -371,6 +441,7 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "agency", "player"],
       transfer_status: ["pendiente", "aprobado", "rechazado"],
+      withdrawal_status: ["pendiente", "aprobado", "rechazado"],
     },
   },
 } as const

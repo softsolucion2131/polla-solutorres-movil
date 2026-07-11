@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { LogOut, LayoutDashboard, Users, Building2, ShieldCheck, Wallet, ListChecks, Inbox } from "lucide-react";
+import { LogOut, LayoutDashboard, Users, Building2, ShieldCheck, Wallet, ListChecks, Inbox, Banknote, HandCoins } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -47,6 +47,20 @@ function AuthedLayout() {
     refetchInterval: 15000,
   });
 
+  const { data: pendingWithdrawals = 0 } = useQuery({
+    enabled: !!user && isAgency && !!profile?.agency_id,
+    queryKey: ["agency-pending-withdrawals", profile?.agency_id],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from("withdrawals")
+        .select("id", { count: "exact", head: true })
+        .eq("agency_id", profile!.agency_id!)
+        .eq("status", "pendiente");
+      return count ?? 0;
+    },
+    refetchInterval: 15000,
+  });
+
   // Realtime notifications
   const shownRef = useRef<Set<string>>(new Set());
   useEffect(() => {
@@ -72,6 +86,25 @@ function AuthedLayout() {
         )
         .subscribe();
       channels.push(ch);
+
+      const chw = supabase
+        .channel(`player-withdrawals-${user.id}`)
+        .on(
+          "postgres_changes",
+          { event: "UPDATE", schema: "public", table: "withdrawals", filter: `user_id=eq.${user.id}` },
+          (payload) => {
+            const key = `pw-${payload.new.id}-${payload.new.status}`;
+            if (shownRef.current.has(key)) return;
+            shownRef.current.add(key);
+            const status = payload.new.status;
+            const amt = Number(payload.new.amount).toFixed(2);
+            if (status === "aprobado") toast.success(`Tu retiro de Bs ${amt} fue aprobado ✅`);
+            else if (status === "rechazado") toast.error(`Tu retiro de Bs ${amt} fue rechazado`);
+            qc.invalidateQueries({ queryKey: ["my-withdrawals"] });
+          },
+        )
+        .subscribe();
+      channels.push(chw);
     }
 
     if (isAgency && profile?.agency_id) {
@@ -91,6 +124,23 @@ function AuthedLayout() {
         )
         .subscribe();
       channels.push(ch);
+
+      const chw = supabase
+        .channel(`agency-withdrawals-${profile.agency_id}`)
+        .on(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "withdrawals", filter: `agency_id=eq.${profile.agency_id}` },
+          (payload) => {
+            const key = `aw-${payload.new.id}`;
+            if (shownRef.current.has(key)) return;
+            shownRef.current.add(key);
+            toast.info(`Nueva solicitud de retiro: Bs ${Number(payload.new.amount).toFixed(2)}`);
+            qc.invalidateQueries({ queryKey: ["agency-withdrawals"] });
+            qc.invalidateQueries({ queryKey: ["agency-pending-withdrawals"] });
+          },
+        )
+        .subscribe();
+      channels.push(chw);
     }
 
     return () => { channels.forEach((c) => supabase.removeChannel(c)); };
@@ -117,6 +167,8 @@ function AuthedLayout() {
               <div className="mt-4 px-3 text-xs uppercase tracking-widest text-muted-foreground">Jugador</div>
               <NavLink to="/deposit" icon={<Wallet className="h-4 w-4" />}>Depositar</NavLink>
               <NavLink to="/my-deposits" icon={<ListChecks className="h-4 w-4" />}>Mis depósitos</NavLink>
+              <NavLink to="/withdraw" icon={<HandCoins className="h-4 w-4" />}>Retirar</NavLink>
+              <NavLink to="/my-withdrawals" icon={<Banknote className="h-4 w-4" />}>Mis retiros</NavLink>
             </>
           )}
 
@@ -129,6 +181,13 @@ function AuthedLayout() {
                 badge={pendingCount > 0 ? pendingCount : undefined}
               >
                 Depósitos
+              </NavLink>
+              <NavLink
+                to="/agency/withdrawals"
+                icon={<Banknote className="h-4 w-4" />}
+                badge={pendingWithdrawals > 0 ? pendingWithdrawals : undefined}
+              >
+                Retiros
               </NavLink>
               <NavLink to="/dashboard" icon={<ShieldCheck className="h-4 w-4" />}>Mi panel</NavLink>
             </>

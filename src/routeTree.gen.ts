@@ -13,9 +13,12 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedWithdrawRouteImport } from './routes/_authenticated/withdraw'
+import { Route as AuthenticatedMyWithdrawalsRouteImport } from './routes/_authenticated/my-withdrawals'
 import { Route as AuthenticatedMyDepositsRouteImport } from './routes/_authenticated/my-deposits'
 import { Route as AuthenticatedDepositRouteImport } from './routes/_authenticated/deposit'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedAgencyWithdrawalsRouteImport } from './routes/_authenticated/agency/withdrawals'
 import { Route as AuthenticatedAgencyDepositsRouteImport } from './routes/_authenticated/agency/deposits'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
 import { Route as AuthenticatedAdminAgenciesRouteImport } from './routes/_authenticated/admin/agencies'
@@ -39,6 +42,17 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedWithdrawRoute = AuthenticatedWithdrawRouteImport.update({
+  id: '/withdraw',
+  path: '/withdraw',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMyWithdrawalsRoute =
+  AuthenticatedMyWithdrawalsRouteImport.update({
+    id: '/my-withdrawals',
+    path: '/my-withdrawals',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedMyDepositsRoute = AuthenticatedMyDepositsRouteImport.update({
   id: '/my-deposits',
   path: '/my-deposits',
@@ -54,6 +68,12 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAgencyWithdrawalsRoute =
+  AuthenticatedAgencyWithdrawalsRouteImport.update({
+    id: '/agency/withdrawals',
+    path: '/agency/withdrawals',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAgencyDepositsRoute =
   AuthenticatedAgencyDepositsRouteImport.update({
     id: '/agency/deposits',
@@ -79,9 +99,12 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/deposit': typeof AuthenticatedDepositRoute
   '/my-deposits': typeof AuthenticatedMyDepositsRoute
+  '/my-withdrawals': typeof AuthenticatedMyWithdrawalsRoute
+  '/withdraw': typeof AuthenticatedWithdrawRoute
   '/admin/agencies': typeof AuthenticatedAdminAgenciesRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/agency/deposits': typeof AuthenticatedAgencyDepositsRoute
+  '/agency/withdrawals': typeof AuthenticatedAgencyWithdrawalsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -90,9 +113,12 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/deposit': typeof AuthenticatedDepositRoute
   '/my-deposits': typeof AuthenticatedMyDepositsRoute
+  '/my-withdrawals': typeof AuthenticatedMyWithdrawalsRoute
+  '/withdraw': typeof AuthenticatedWithdrawRoute
   '/admin/agencies': typeof AuthenticatedAdminAgenciesRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/agency/deposits': typeof AuthenticatedAgencyDepositsRoute
+  '/agency/withdrawals': typeof AuthenticatedAgencyWithdrawalsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -103,9 +129,12 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/deposit': typeof AuthenticatedDepositRoute
   '/_authenticated/my-deposits': typeof AuthenticatedMyDepositsRoute
+  '/_authenticated/my-withdrawals': typeof AuthenticatedMyWithdrawalsRoute
+  '/_authenticated/withdraw': typeof AuthenticatedWithdrawRoute
   '/_authenticated/admin/agencies': typeof AuthenticatedAdminAgenciesRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/agency/deposits': typeof AuthenticatedAgencyDepositsRoute
+  '/_authenticated/agency/withdrawals': typeof AuthenticatedAgencyWithdrawalsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -116,9 +145,12 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/deposit'
     | '/my-deposits'
+    | '/my-withdrawals'
+    | '/withdraw'
     | '/admin/agencies'
     | '/admin/users'
     | '/agency/deposits'
+    | '/agency/withdrawals'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -127,9 +159,12 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/deposit'
     | '/my-deposits'
+    | '/my-withdrawals'
+    | '/withdraw'
     | '/admin/agencies'
     | '/admin/users'
     | '/agency/deposits'
+    | '/agency/withdrawals'
   id:
     | '__root__'
     | '/'
@@ -139,9 +174,12 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/deposit'
     | '/_authenticated/my-deposits'
+    | '/_authenticated/my-withdrawals'
+    | '/_authenticated/withdraw'
     | '/_authenticated/admin/agencies'
     | '/_authenticated/admin/users'
     | '/_authenticated/agency/deposits'
+    | '/_authenticated/agency/withdrawals'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -181,6 +219,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/withdraw': {
+      id: '/_authenticated/withdraw'
+      path: '/withdraw'
+      fullPath: '/withdraw'
+      preLoaderRoute: typeof AuthenticatedWithdrawRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/my-withdrawals': {
+      id: '/_authenticated/my-withdrawals'
+      path: '/my-withdrawals'
+      fullPath: '/my-withdrawals'
+      preLoaderRoute: typeof AuthenticatedMyWithdrawalsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/my-deposits': {
       id: '/_authenticated/my-deposits'
       path: '/my-deposits'
@@ -200,6 +252,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/agency/withdrawals': {
+      id: '/_authenticated/agency/withdrawals'
+      path: '/agency/withdrawals'
+      fullPath: '/agency/withdrawals'
+      preLoaderRoute: typeof AuthenticatedAgencyWithdrawalsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/agency/deposits': {
@@ -230,18 +289,24 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDepositRoute: typeof AuthenticatedDepositRoute
   AuthenticatedMyDepositsRoute: typeof AuthenticatedMyDepositsRoute
+  AuthenticatedMyWithdrawalsRoute: typeof AuthenticatedMyWithdrawalsRoute
+  AuthenticatedWithdrawRoute: typeof AuthenticatedWithdrawRoute
   AuthenticatedAdminAgenciesRoute: typeof AuthenticatedAdminAgenciesRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedAgencyDepositsRoute: typeof AuthenticatedAgencyDepositsRoute
+  AuthenticatedAgencyWithdrawalsRoute: typeof AuthenticatedAgencyWithdrawalsRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDepositRoute: AuthenticatedDepositRoute,
   AuthenticatedMyDepositsRoute: AuthenticatedMyDepositsRoute,
+  AuthenticatedMyWithdrawalsRoute: AuthenticatedMyWithdrawalsRoute,
+  AuthenticatedWithdrawRoute: AuthenticatedWithdrawRoute,
   AuthenticatedAdminAgenciesRoute: AuthenticatedAdminAgenciesRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedAgencyDepositsRoute: AuthenticatedAgencyDepositsRoute,
+  AuthenticatedAgencyWithdrawalsRoute: AuthenticatedAgencyWithdrawalsRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -256,13 +321,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
