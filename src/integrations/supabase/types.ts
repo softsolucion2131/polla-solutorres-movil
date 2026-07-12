@@ -79,6 +79,69 @@ export type Database = {
         }
         Relationships: []
       }
+      hipodromos: {
+        Row: {
+          activo: boolean
+          acumulado: number
+          cos_bol: number
+          created_at: string
+          divmax: number
+          empate: number
+          idhip: string
+          nomhip: string
+          nrocaballos: number
+          nrocarreras: number
+          porc_acumulado: number
+          porc_primer_lugar: number
+          porc_retener: number
+          porc_segundo_lugar: number
+          porc_tercer_lugar: number
+          tipo: number
+          updated_at: string
+          venxcar: number
+        }
+        Insert: {
+          activo?: boolean
+          acumulado?: number
+          cos_bol?: number
+          created_at?: string
+          divmax?: number
+          empate?: number
+          idhip: string
+          nomhip: string
+          nrocaballos?: number
+          nrocarreras?: number
+          porc_acumulado?: number
+          porc_primer_lugar?: number
+          porc_retener?: number
+          porc_segundo_lugar?: number
+          porc_tercer_lugar?: number
+          tipo?: number
+          updated_at?: string
+          venxcar?: number
+        }
+        Update: {
+          activo?: boolean
+          acumulado?: number
+          cos_bol?: number
+          created_at?: string
+          divmax?: number
+          empate?: number
+          idhip?: string
+          nomhip?: string
+          nrocaballos?: number
+          nrocarreras?: number
+          porc_acumulado?: number
+          porc_primer_lugar?: number
+          porc_retener?: number
+          porc_segundo_lugar?: number
+          porc_tercer_lugar?: number
+          tipo?: number
+          updated_at?: string
+          venxcar?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           agency_id: number | null
