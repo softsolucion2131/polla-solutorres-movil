@@ -189,6 +189,7 @@ function AuthedLayout() {
               >
                 Retiros
               </NavLink>
+              <NavLink to="/agency/dividendos" icon={<Percent className="h-4 w-4" />}>Dividendos</NavLink>
               <NavLink to="/dashboard" icon={<ShieldCheck className="h-4 w-4" />}>Mi panel</NavLink>
             </>
           )}
