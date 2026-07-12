@@ -79,6 +79,96 @@ export type Database = {
         }
         Relationships: []
       }
+      dividendos: {
+        Row: {
+          adicional: number
+          adicionald: number
+          adicionalp: number
+          adicionals: number
+          created_at: string
+          desde: number
+          desdep: number
+          desdes: number
+          divfijo: number
+          divfijop: number
+          divfijos: number
+          fijo: number
+          fijod: number
+          fijop: number
+          fijos: number
+          hasta: number
+          hastap: number
+          hastas: number
+          id_div: number
+          idage: number
+          idhip: string
+          updated_at: string
+        }
+        Insert: {
+          adicional?: number
+          adicionald?: number
+          adicionalp?: number
+          adicionals?: number
+          created_at?: string
+          desde?: number
+          desdep?: number
+          desdes?: number
+          divfijo?: number
+          divfijop?: number
+          divfijos?: number
+          fijo?: number
+          fijod?: number
+          fijop?: number
+          fijos?: number
+          hasta?: number
+          hastap?: number
+          hastas?: number
+          id_div?: number
+          idage: number
+          idhip: string
+          updated_at?: string
+        }
+        Update: {
+          adicional?: number
+          adicionald?: number
+          adicionalp?: number
+          adicionals?: number
+          created_at?: string
+          desde?: number
+          desdep?: number
+          desdes?: number
+          divfijo?: number
+          divfijop?: number
+          divfijos?: number
+          fijo?: number
+          fijod?: number
+          fijop?: number
+          fijos?: number
+          hasta?: number
+          hastap?: number
+          hastas?: number
+          id_div?: number
+          idage?: number
+          idhip?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dividendos_idage_fkey"
+            columns: ["idage"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dividendos_idhip_fkey"
+            columns: ["idhip"]
+            isOneToOne: false
+            referencedRelation: "hipodromos"
+            referencedColumns: ["idhip"]
+          },
+        ]
+      }
       hipodromos: {
         Row: {
           activo: boolean

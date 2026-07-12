@@ -19,6 +19,7 @@ import { Route as AuthenticatedMyDepositsRouteImport } from './routes/_authentic
 import { Route as AuthenticatedDepositRouteImport } from './routes/_authenticated/deposit'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAgencyWithdrawalsRouteImport } from './routes/_authenticated/agency/withdrawals'
+import { Route as AuthenticatedAgencyDividendosRouteImport } from './routes/_authenticated/agency/dividendos'
 import { Route as AuthenticatedAgencyDepositsRouteImport } from './routes/_authenticated/agency/deposits'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
 import { Route as AuthenticatedAdminHipodromosRouteImport } from './routes/_authenticated/admin/hipodromos'
@@ -75,6 +76,12 @@ const AuthenticatedAgencyWithdrawalsRoute =
     path: '/agency/withdrawals',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAgencyDividendosRoute =
+  AuthenticatedAgencyDividendosRouteImport.update({
+    id: '/agency/dividendos',
+    path: '/agency/dividendos',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAgencyDepositsRoute =
   AuthenticatedAgencyDepositsRouteImport.update({
     id: '/agency/deposits',
@@ -112,6 +119,7 @@ export interface FileRoutesByFullPath {
   '/admin/hipodromos': typeof AuthenticatedAdminHipodromosRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/agency/deposits': typeof AuthenticatedAgencyDepositsRoute
+  '/agency/dividendos': typeof AuthenticatedAgencyDividendosRoute
   '/agency/withdrawals': typeof AuthenticatedAgencyWithdrawalsRoute
 }
 export interface FileRoutesByTo {
@@ -127,6 +135,7 @@ export interface FileRoutesByTo {
   '/admin/hipodromos': typeof AuthenticatedAdminHipodromosRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/agency/deposits': typeof AuthenticatedAgencyDepositsRoute
+  '/agency/dividendos': typeof AuthenticatedAgencyDividendosRoute
   '/agency/withdrawals': typeof AuthenticatedAgencyWithdrawalsRoute
 }
 export interface FileRoutesById {
@@ -144,6 +153,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/hipodromos': typeof AuthenticatedAdminHipodromosRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/agency/deposits': typeof AuthenticatedAgencyDepositsRoute
+  '/_authenticated/agency/dividendos': typeof AuthenticatedAgencyDividendosRoute
   '/_authenticated/agency/withdrawals': typeof AuthenticatedAgencyWithdrawalsRoute
 }
 export interface FileRouteTypes {
@@ -161,6 +171,7 @@ export interface FileRouteTypes {
     | '/admin/hipodromos'
     | '/admin/users'
     | '/agency/deposits'
+    | '/agency/dividendos'
     | '/agency/withdrawals'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -176,6 +187,7 @@ export interface FileRouteTypes {
     | '/admin/hipodromos'
     | '/admin/users'
     | '/agency/deposits'
+    | '/agency/dividendos'
     | '/agency/withdrawals'
   id:
     | '__root__'
@@ -192,6 +204,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/hipodromos'
     | '/_authenticated/admin/users'
     | '/_authenticated/agency/deposits'
+    | '/_authenticated/agency/dividendos'
     | '/_authenticated/agency/withdrawals'
   fileRoutesById: FileRoutesById
 }
@@ -274,6 +287,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAgencyWithdrawalsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/agency/dividendos': {
+      id: '/_authenticated/agency/dividendos'
+      path: '/agency/dividendos'
+      fullPath: '/agency/dividendos'
+      preLoaderRoute: typeof AuthenticatedAgencyDividendosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/agency/deposits': {
       id: '/_authenticated/agency/deposits'
       path: '/agency/deposits'
@@ -315,6 +335,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminHipodromosRoute: typeof AuthenticatedAdminHipodromosRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedAgencyDepositsRoute: typeof AuthenticatedAgencyDepositsRoute
+  AuthenticatedAgencyDividendosRoute: typeof AuthenticatedAgencyDividendosRoute
   AuthenticatedAgencyWithdrawalsRoute: typeof AuthenticatedAgencyWithdrawalsRoute
 }
 
@@ -328,6 +349,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminHipodromosRoute: AuthenticatedAdminHipodromosRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedAgencyDepositsRoute: AuthenticatedAgencyDepositsRoute,
+  AuthenticatedAgencyDividendosRoute: AuthenticatedAgencyDividendosRoute,
   AuthenticatedAgencyWithdrawalsRoute: AuthenticatedAgencyWithdrawalsRoute,
 }
 

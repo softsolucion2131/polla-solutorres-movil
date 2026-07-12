@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { LogOut, LayoutDashboard, Users, Building2, ShieldCheck, Wallet, ListChecks, Inbox, Banknote, HandCoins, Trophy } from "lucide-react";
+import { LogOut, LayoutDashboard, Users, Building2, ShieldCheck, Wallet, ListChecks, Inbox, Banknote, HandCoins, Trophy, Percent } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -189,6 +189,7 @@ function AuthedLayout() {
               >
                 Retiros
               </NavLink>
+              <NavLink to="/agency/dividendos" icon={<Percent className="h-4 w-4" />}>Dividendos</NavLink>
               <NavLink to="/dashboard" icon={<ShieldCheck className="h-4 w-4" />}>Mi panel</NavLink>
             </>
           )}
