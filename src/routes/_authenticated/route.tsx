@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { LogOut, LayoutDashboard, Users, Building2, ShieldCheck, Wallet, ListChecks, Inbox, Banknote, HandCoins, Trophy, Percent } from "lucide-react";
+import { LogOut, LayoutDashboard, Users, Building2, ShieldCheck, Wallet, ListChecks, Inbox, Banknote, HandCoins, Trophy, Percent, ClipboardList } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
