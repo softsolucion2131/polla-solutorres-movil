@@ -199,6 +199,7 @@ function AuthedLayout() {
               <div className="mt-4 px-3 text-xs uppercase tracking-widest text-muted-foreground">Admin</div>
               <NavLink to="/admin/agencies" icon={<Building2 className="h-4 w-4" />}>Agencias</NavLink>
               <NavLink to="/admin/hipodromos" icon={<Trophy className="h-4 w-4" />}>Hipódromos</NavLink>
+              <NavLink to="/admin/cargar-programa" icon={<ClipboardList className="h-4 w-4" />}>Cargar programa</NavLink>
               <NavLink to="/admin/users" icon={<Users className="h-4 w-4" />}>Usuarios y roles</NavLink>
             </>
           )}
