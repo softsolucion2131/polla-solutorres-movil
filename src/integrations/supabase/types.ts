@@ -79,6 +79,80 @@ export type Database = {
         }
         Relationships: []
       }
+      detprog: {
+        Row: {
+          bloquea_ok: boolean
+          carrera: number
+          created_at: string
+          divgan: number
+          divgand: number
+          divplace: number | null
+          divplaced: number
+          divshow: number
+          fechac: string
+          id: number
+          idhip: string
+          idprog: number
+          nombreeje: string | null
+          nro_valida: number | null
+          nroejem: string
+          puntos_especiales: number | null
+          ret_ok: boolean
+          updated_at: string
+          valida_polla: boolean | null
+        }
+        Insert: {
+          bloquea_ok?: boolean
+          carrera: number
+          created_at?: string
+          divgan?: number
+          divgand?: number
+          divplace?: number | null
+          divplaced?: number
+          divshow?: number
+          fechac: string
+          id?: number
+          idhip: string
+          idprog: number
+          nombreeje?: string | null
+          nro_valida?: number | null
+          nroejem: string
+          puntos_especiales?: number | null
+          ret_ok?: boolean
+          updated_at?: string
+          valida_polla?: boolean | null
+        }
+        Update: {
+          bloquea_ok?: boolean
+          carrera?: number
+          created_at?: string
+          divgan?: number
+          divgand?: number
+          divplace?: number | null
+          divplaced?: number
+          divshow?: number
+          fechac?: string
+          id?: number
+          idhip?: string
+          idprog?: number
+          nombreeje?: string | null
+          nro_valida?: number | null
+          nroejem?: string
+          puntos_especiales?: number | null
+          ret_ok?: boolean
+          updated_at?: string
+          valida_polla?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "detprog_idprog_fkey"
+            columns: ["idprog"]
+            isOneToOne: false
+            referencedRelation: "programa"
+            referencedColumns: ["idprog"]
+          },
+        ]
+      }
       dividendos: {
         Row: {
           adicional: number
@@ -292,6 +366,110 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "banks"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      programa: {
+        Row: {
+          bloquea_ok: boolean
+          cabgan: string
+          cabpla: number
+          cabpla2: number
+          cabshow3: number
+          carrera: number
+          conf_ok: boolean
+          created_at: string
+          divgan: number | null
+          divgand: number | null
+          divpla: number
+          divpla2: number
+          divplad: number
+          divplad2: number
+          divshow: number
+          divshow2: number
+          divshow3: number
+          divshowd: number
+          divshowd2: number
+          divshowd3: number
+          empate: boolean | null
+          fechac: string
+          horac: string | null
+          idhip: string
+          idprog: number
+          nro_valida: number | null
+          nrocab: number
+          updated_at: string
+          valida_polla: boolean | null
+        }
+        Insert: {
+          bloquea_ok?: boolean
+          cabgan?: string
+          cabpla?: number
+          cabpla2?: number
+          cabshow3?: number
+          carrera: number
+          conf_ok?: boolean
+          created_at?: string
+          divgan?: number | null
+          divgand?: number | null
+          divpla?: number
+          divpla2?: number
+          divplad?: number
+          divplad2?: number
+          divshow?: number
+          divshow2?: number
+          divshow3?: number
+          divshowd?: number
+          divshowd2?: number
+          divshowd3?: number
+          empate?: boolean | null
+          fechac: string
+          horac?: string | null
+          idhip: string
+          idprog?: number
+          nro_valida?: number | null
+          nrocab?: number
+          updated_at?: string
+          valida_polla?: boolean | null
+        }
+        Update: {
+          bloquea_ok?: boolean
+          cabgan?: string
+          cabpla?: number
+          cabpla2?: number
+          cabshow3?: number
+          carrera?: number
+          conf_ok?: boolean
+          created_at?: string
+          divgan?: number | null
+          divgand?: number | null
+          divpla?: number
+          divpla2?: number
+          divplad?: number
+          divplad2?: number
+          divshow?: number
+          divshow2?: number
+          divshow3?: number
+          divshowd?: number
+          divshowd2?: number
+          divshowd3?: number
+          empate?: boolean | null
+          fechac?: string
+          horac?: string | null
+          idhip?: string
+          idprog?: number
+          nro_valida?: number | null
+          nrocab?: number
+          updated_at?: string
+          valida_polla?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "programa_idhip_fkey"
+            columns: ["idhip"]
+            isOneToOne: false
+            referencedRelation: "hipodromos"
+            referencedColumns: ["idhip"]
           },
         ]
       }
