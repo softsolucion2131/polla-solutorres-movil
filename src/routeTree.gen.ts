@@ -23,6 +23,7 @@ import { Route as AuthenticatedAgencyDividendosRouteImport } from './routes/_aut
 import { Route as AuthenticatedAgencyDepositsRouteImport } from './routes/_authenticated/agency/deposits'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
 import { Route as AuthenticatedAdminHipodromosRouteImport } from './routes/_authenticated/admin/hipodromos'
+import { Route as AuthenticatedAdminCargarProgramaRouteImport } from './routes/_authenticated/admin/cargar-programa'
 import { Route as AuthenticatedAdminAgenciesRouteImport } from './routes/_authenticated/admin/agencies'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -99,6 +100,12 @@ const AuthenticatedAdminHipodromosRoute =
     path: '/admin/hipodromos',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminCargarProgramaRoute =
+  AuthenticatedAdminCargarProgramaRouteImport.update({
+    id: '/admin/cargar-programa',
+    path: '/admin/cargar-programa',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminAgenciesRoute =
   AuthenticatedAdminAgenciesRouteImport.update({
     id: '/admin/agencies',
@@ -116,6 +123,7 @@ export interface FileRoutesByFullPath {
   '/my-withdrawals': typeof AuthenticatedMyWithdrawalsRoute
   '/withdraw': typeof AuthenticatedWithdrawRoute
   '/admin/agencies': typeof AuthenticatedAdminAgenciesRoute
+  '/admin/cargar-programa': typeof AuthenticatedAdminCargarProgramaRoute
   '/admin/hipodromos': typeof AuthenticatedAdminHipodromosRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/agency/deposits': typeof AuthenticatedAgencyDepositsRoute
@@ -132,6 +140,7 @@ export interface FileRoutesByTo {
   '/my-withdrawals': typeof AuthenticatedMyWithdrawalsRoute
   '/withdraw': typeof AuthenticatedWithdrawRoute
   '/admin/agencies': typeof AuthenticatedAdminAgenciesRoute
+  '/admin/cargar-programa': typeof AuthenticatedAdminCargarProgramaRoute
   '/admin/hipodromos': typeof AuthenticatedAdminHipodromosRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/agency/deposits': typeof AuthenticatedAgencyDepositsRoute
@@ -150,6 +159,7 @@ export interface FileRoutesById {
   '/_authenticated/my-withdrawals': typeof AuthenticatedMyWithdrawalsRoute
   '/_authenticated/withdraw': typeof AuthenticatedWithdrawRoute
   '/_authenticated/admin/agencies': typeof AuthenticatedAdminAgenciesRoute
+  '/_authenticated/admin/cargar-programa': typeof AuthenticatedAdminCargarProgramaRoute
   '/_authenticated/admin/hipodromos': typeof AuthenticatedAdminHipodromosRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/agency/deposits': typeof AuthenticatedAgencyDepositsRoute
@@ -168,6 +178,7 @@ export interface FileRouteTypes {
     | '/my-withdrawals'
     | '/withdraw'
     | '/admin/agencies'
+    | '/admin/cargar-programa'
     | '/admin/hipodromos'
     | '/admin/users'
     | '/agency/deposits'
@@ -184,6 +195,7 @@ export interface FileRouteTypes {
     | '/my-withdrawals'
     | '/withdraw'
     | '/admin/agencies'
+    | '/admin/cargar-programa'
     | '/admin/hipodromos'
     | '/admin/users'
     | '/agency/deposits'
@@ -201,6 +213,7 @@ export interface FileRouteTypes {
     | '/_authenticated/my-withdrawals'
     | '/_authenticated/withdraw'
     | '/_authenticated/admin/agencies'
+    | '/_authenticated/admin/cargar-programa'
     | '/_authenticated/admin/hipodromos'
     | '/_authenticated/admin/users'
     | '/_authenticated/agency/deposits'
@@ -315,6 +328,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminHipodromosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/cargar-programa': {
+      id: '/_authenticated/admin/cargar-programa'
+      path: '/admin/cargar-programa'
+      fullPath: '/admin/cargar-programa'
+      preLoaderRoute: typeof AuthenticatedAdminCargarProgramaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/agencies': {
       id: '/_authenticated/admin/agencies'
       path: '/admin/agencies'
@@ -332,6 +352,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMyWithdrawalsRoute: typeof AuthenticatedMyWithdrawalsRoute
   AuthenticatedWithdrawRoute: typeof AuthenticatedWithdrawRoute
   AuthenticatedAdminAgenciesRoute: typeof AuthenticatedAdminAgenciesRoute
+  AuthenticatedAdminCargarProgramaRoute: typeof AuthenticatedAdminCargarProgramaRoute
   AuthenticatedAdminHipodromosRoute: typeof AuthenticatedAdminHipodromosRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedAgencyDepositsRoute: typeof AuthenticatedAgencyDepositsRoute
@@ -346,6 +367,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMyWithdrawalsRoute: AuthenticatedMyWithdrawalsRoute,
   AuthenticatedWithdrawRoute: AuthenticatedWithdrawRoute,
   AuthenticatedAdminAgenciesRoute: AuthenticatedAdminAgenciesRoute,
+  AuthenticatedAdminCargarProgramaRoute: AuthenticatedAdminCargarProgramaRoute,
   AuthenticatedAdminHipodromosRoute: AuthenticatedAdminHipodromosRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedAgencyDepositsRoute: AuthenticatedAgencyDepositsRoute,
