@@ -306,6 +306,72 @@ export type Database = {
         }
         Relationships: []
       }
+      pollas: {
+        Row: {
+          agency_id: number | null
+          combinacion: Json
+          combinaciones: number
+          created_at: string
+          estado: Database["public"]["Enums"]["polla_estado"]
+          fechac: string
+          id: string
+          idhip: string
+          lugar: number | null
+          monto: number
+          premio: number
+          puntos: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          agency_id?: number | null
+          combinacion: Json
+          combinaciones?: number
+          created_at?: string
+          estado?: Database["public"]["Enums"]["polla_estado"]
+          fechac: string
+          id?: string
+          idhip: string
+          lugar?: number | null
+          monto?: number
+          premio?: number
+          puntos?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          agency_id?: number | null
+          combinacion?: Json
+          combinaciones?: number
+          created_at?: string
+          estado?: Database["public"]["Enums"]["polla_estado"]
+          fechac?: string
+          id?: string
+          idhip?: string
+          lugar?: number | null
+          monto?: number
+          premio?: number
+          puntos?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pollas_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pollas_idhip_fkey"
+            columns: ["idhip"]
+            isOneToOne: false
+            referencedRelation: "hipodromos"
+            referencedColumns: ["idhip"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           agency_id: number | null
@@ -641,6 +707,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "agency" | "player"
+      polla_estado: "proceso" | "ganador" | "pagado" | "perdedor"
       transfer_status: "pendiente" | "aprobado" | "rechazado"
       withdrawal_status: "pendiente" | "aprobado" | "rechazado"
     }
@@ -771,6 +838,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "agency", "player"],
+      polla_estado: ["proceso", "ganador", "pagado", "perdedor"],
       transfer_status: ["pendiente", "aprobado", "rechazado"],
       withdrawal_status: ["pendiente", "aprobado", "rechazado"],
     },

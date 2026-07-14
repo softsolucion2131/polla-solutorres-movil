@@ -14,6 +14,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedWithdrawRouteImport } from './routes/_authenticated/withdraw'
+import { Route as AuthenticatedPollasRouteImport } from './routes/_authenticated/pollas'
 import { Route as AuthenticatedMyWithdrawalsRouteImport } from './routes/_authenticated/my-withdrawals'
 import { Route as AuthenticatedMyDepositsRouteImport } from './routes/_authenticated/my-deposits'
 import { Route as AuthenticatedDepositRouteImport } from './routes/_authenticated/deposit'
@@ -48,6 +49,11 @@ const IndexRoute = IndexRouteImport.update({
 const AuthenticatedWithdrawRoute = AuthenticatedWithdrawRouteImport.update({
   id: '/withdraw',
   path: '/withdraw',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPollasRoute = AuthenticatedPollasRouteImport.update({
+  id: '/pollas',
+  path: '/pollas',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedMyWithdrawalsRoute =
@@ -121,6 +127,7 @@ export interface FileRoutesByFullPath {
   '/deposit': typeof AuthenticatedDepositRoute
   '/my-deposits': typeof AuthenticatedMyDepositsRoute
   '/my-withdrawals': typeof AuthenticatedMyWithdrawalsRoute
+  '/pollas': typeof AuthenticatedPollasRoute
   '/withdraw': typeof AuthenticatedWithdrawRoute
   '/admin/agencies': typeof AuthenticatedAdminAgenciesRoute
   '/admin/cargar-programa': typeof AuthenticatedAdminCargarProgramaRoute
@@ -138,6 +145,7 @@ export interface FileRoutesByTo {
   '/deposit': typeof AuthenticatedDepositRoute
   '/my-deposits': typeof AuthenticatedMyDepositsRoute
   '/my-withdrawals': typeof AuthenticatedMyWithdrawalsRoute
+  '/pollas': typeof AuthenticatedPollasRoute
   '/withdraw': typeof AuthenticatedWithdrawRoute
   '/admin/agencies': typeof AuthenticatedAdminAgenciesRoute
   '/admin/cargar-programa': typeof AuthenticatedAdminCargarProgramaRoute
@@ -157,6 +165,7 @@ export interface FileRoutesById {
   '/_authenticated/deposit': typeof AuthenticatedDepositRoute
   '/_authenticated/my-deposits': typeof AuthenticatedMyDepositsRoute
   '/_authenticated/my-withdrawals': typeof AuthenticatedMyWithdrawalsRoute
+  '/_authenticated/pollas': typeof AuthenticatedPollasRoute
   '/_authenticated/withdraw': typeof AuthenticatedWithdrawRoute
   '/_authenticated/admin/agencies': typeof AuthenticatedAdminAgenciesRoute
   '/_authenticated/admin/cargar-programa': typeof AuthenticatedAdminCargarProgramaRoute
@@ -176,6 +185,7 @@ export interface FileRouteTypes {
     | '/deposit'
     | '/my-deposits'
     | '/my-withdrawals'
+    | '/pollas'
     | '/withdraw'
     | '/admin/agencies'
     | '/admin/cargar-programa'
@@ -193,6 +203,7 @@ export interface FileRouteTypes {
     | '/deposit'
     | '/my-deposits'
     | '/my-withdrawals'
+    | '/pollas'
     | '/withdraw'
     | '/admin/agencies'
     | '/admin/cargar-programa'
@@ -211,6 +222,7 @@ export interface FileRouteTypes {
     | '/_authenticated/deposit'
     | '/_authenticated/my-deposits'
     | '/_authenticated/my-withdrawals'
+    | '/_authenticated/pollas'
     | '/_authenticated/withdraw'
     | '/_authenticated/admin/agencies'
     | '/_authenticated/admin/cargar-programa'
@@ -263,6 +275,13 @@ declare module '@tanstack/react-router' {
       path: '/withdraw'
       fullPath: '/withdraw'
       preLoaderRoute: typeof AuthenticatedWithdrawRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/pollas': {
+      id: '/_authenticated/pollas'
+      path: '/pollas'
+      fullPath: '/pollas'
+      preLoaderRoute: typeof AuthenticatedPollasRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/my-withdrawals': {
@@ -350,6 +369,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDepositRoute: typeof AuthenticatedDepositRoute
   AuthenticatedMyDepositsRoute: typeof AuthenticatedMyDepositsRoute
   AuthenticatedMyWithdrawalsRoute: typeof AuthenticatedMyWithdrawalsRoute
+  AuthenticatedPollasRoute: typeof AuthenticatedPollasRoute
   AuthenticatedWithdrawRoute: typeof AuthenticatedWithdrawRoute
   AuthenticatedAdminAgenciesRoute: typeof AuthenticatedAdminAgenciesRoute
   AuthenticatedAdminCargarProgramaRoute: typeof AuthenticatedAdminCargarProgramaRoute
@@ -365,6 +385,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDepositRoute: AuthenticatedDepositRoute,
   AuthenticatedMyDepositsRoute: AuthenticatedMyDepositsRoute,
   AuthenticatedMyWithdrawalsRoute: AuthenticatedMyWithdrawalsRoute,
+  AuthenticatedPollasRoute: AuthenticatedPollasRoute,
   AuthenticatedWithdrawRoute: AuthenticatedWithdrawRoute,
   AuthenticatedAdminAgenciesRoute: AuthenticatedAdminAgenciesRoute,
   AuthenticatedAdminCargarProgramaRoute: AuthenticatedAdminCargarProgramaRoute,

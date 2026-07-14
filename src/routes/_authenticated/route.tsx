@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { LogOut, LayoutDashboard, Users, Building2, ShieldCheck, Wallet, ListChecks, Inbox, Banknote, HandCoins, Trophy, Percent, ClipboardList } from "lucide-react";
+import { LogOut, LayoutDashboard, Users, Building2, ShieldCheck, Wallet, ListChecks, Inbox, Banknote, HandCoins, Trophy, Percent, ClipboardList, Ticket } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -165,6 +165,7 @@ function AuthedLayout() {
           {isPlayer && !isAdmin && !isAgency && (
             <>
               <div className="mt-4 px-3 text-xs uppercase tracking-widest text-muted-foreground">Jugador</div>
+              <NavLink to="/pollas" icon={<Ticket className="h-4 w-4" />}>Sellar polla</NavLink>
               <NavLink to="/deposit" icon={<Wallet className="h-4 w-4" />}>Depositar</NavLink>
               <NavLink to="/my-deposits" icon={<ListChecks className="h-4 w-4" />}>Mis depósitos</NavLink>
               <NavLink to="/withdraw" icon={<HandCoins className="h-4 w-4" />}>Retirar</NavLink>
