@@ -244,6 +244,8 @@ function HipodromoForm({
       venxcar,
     });
     if (!parsed.success) { toast.error(parsed.error.issues[0].message); return; }
+    const suma = parsed.data.porc_retener + parsed.data.porc_acumulado + parsed.data.porc_primer_lugar + parsed.data.porc_segundo_lugar + parsed.data.porc_tercer_lugar;
+    if (Math.abs(suma - 100) > 0.01) { toast.error(`Los porcentajes deben sumar 100% (actual: ${suma.toFixed(2)}%)`); return; }
     onSubmit(parsed.data);
   };
 
