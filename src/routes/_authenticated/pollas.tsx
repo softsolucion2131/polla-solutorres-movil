@@ -299,11 +299,13 @@ function PollasPage() {
       {hip && (
         <>
           {/* Estadísticas */}
-          <div className="grid gap-3 sm:grid-cols-4">
-            <StatCard label="Pollas jugadas" value={String(stats?.cantidad ?? 0)} />
-            <StatCard label="1er Lugar" value={`Bs ${fmt.format(stats?.premio1 ?? 0)}`} />
-            <StatCard label="2do Lugar" value={`Bs ${fmt.format(stats?.premio2 ?? 0)}`} />
-            <StatCard label="3er Lugar" value={`Bs ${fmt.format(stats?.premio3 ?? 0)}`} />
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <StatCard label={`Total jugado (${stats?.cantidad ?? 0} pollas)`} value={`Bs ${fmt.format(stats?.total ?? 0)}`} />
+            <StatCard label={`Retención Casa (${Number(hip.porc_retener).toFixed(0)}%)`} value={`Bs ${fmt.format(stats?.retencion ?? 0)}`} />
+            <StatCard label={`Acumulado (+${Number(hip.porc_acumulado).toFixed(0)}%)`} value={`Bs ${fmt.format(stats?.acumulado ?? 0)}`} />
+            <StatCard label={`1er Lugar (${Number(hip.porc_primer_lugar).toFixed(0)}%)`} value={`Bs ${fmt.format(stats?.premio1 ?? 0)}`} />
+            <StatCard label={`2do Lugar (${Number(hip.porc_segundo_lugar).toFixed(0)}%)`} value={`Bs ${fmt.format(stats?.premio2 ?? 0)}`} />
+            <StatCard label={`3er Lugar (${Number(hip.porc_tercer_lugar).toFixed(0)}%)`} value={`Bs ${fmt.format(stats?.premio3 ?? 0)}`} />
           </div>
 
           {carreras.length === 0 ? (
