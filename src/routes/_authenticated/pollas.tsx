@@ -154,8 +154,8 @@ function PollasPage() {
 
   // Totales de jugadas del día para este hipódromo
   const { data: stats } = useQuery({
-    enabled: !!selectedHip,
-    queryKey: ["pollas-stats", selectedHip, fechac],
+    enabled: !!selectedHip && !!hip,
+    queryKey: ["pollas-stats", selectedHip, fechac, hip?.porc_retener, hip?.porc_acumulado, hip?.porc_primer_lugar, hip?.porc_segundo_lugar, hip?.porc_tercer_lugar, hip?.acumulado],
     queryFn: async () => {
       const { data } = await supabase
         .from("pollas")
@@ -163,8 +163,14 @@ function PollasPage() {
         .eq("idhip", selectedHip!)
         .eq("fechac", fechac);
       const total = (data ?? []).reduce((s, r) => s + Number(r.monto), 0);
+      const retencion = total * Number(hip?.porc_retener ?? 0) / 100;
+      const aportAcum = total * Number(hip?.porc_acumulado ?? 0) / 100;
+      const acumTotal = Number(hip?.acumulado ?? 0) + aportAcum;
       return {
         cantidad: data?.length ?? 0,
+        total,
+        retencion,
+        acumulado: acumTotal,
         premio1: total * Number(hip?.porc_primer_lugar ?? 0) / 100,
         premio2: total * Number(hip?.porc_segundo_lugar ?? 0) / 100,
         premio3: total * Number(hip?.porc_tercer_lugar ?? 0) / 100,
