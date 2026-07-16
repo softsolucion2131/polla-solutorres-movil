@@ -45,6 +45,7 @@ function parsePrograma(text: string): Ejemplar[] {
     if (/^jockey\s*:/i.test(line)) continue;
     if (current && expectName) {
       current.nombreeje = line;
+      if (/^retirad[oa]$/i.test(line.trim())) current.retirado = true;
       expectName = false;
     }
   }
