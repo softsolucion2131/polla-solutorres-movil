@@ -29,6 +29,9 @@ type Hipodromo = {
   nomhip: string;
   nrocaballos: number;
   cos_bol: number;
+  porc_retener: number;
+  porc_acumulado: number;
+  acumulado: number;
   porc_primer_lugar: number;
   porc_segundo_lugar: number;
   porc_tercer_lugar: number;
