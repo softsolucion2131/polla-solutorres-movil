@@ -85,7 +85,7 @@ function PollasPage() {
       if (ids.length === 0) return [] as Hipodromo[];
       const { data } = await supabase
         .from("hipodromos")
-        .select("idhip,nomhip,nrocaballos,cos_bol,porc_primer_lugar,porc_segundo_lugar,porc_tercer_lugar")
+        .select("idhip,nomhip,nrocaballos,cos_bol,porc_retener,porc_acumulado,acumulado,porc_primer_lugar,porc_segundo_lugar,porc_tercer_lugar")
         .in("idhip", ids);
       return (data ?? []) as Hipodromo[];
     },
