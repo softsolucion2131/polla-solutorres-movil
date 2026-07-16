@@ -29,6 +29,9 @@ type Hipodromo = {
   nomhip: string;
   nrocaballos: number;
   cos_bol: number;
+  porc_retener: number;
+  porc_acumulado: number;
+  acumulado: number;
   porc_primer_lugar: number;
   porc_segundo_lugar: number;
   porc_tercer_lugar: number;
@@ -82,7 +85,7 @@ function PollasPage() {
       if (ids.length === 0) return [] as Hipodromo[];
       const { data } = await supabase
         .from("hipodromos")
-        .select("idhip,nomhip,nrocaballos,cos_bol,porc_primer_lugar,porc_segundo_lugar,porc_tercer_lugar")
+        .select("idhip,nomhip,nrocaballos,cos_bol,porc_retener,porc_acumulado,acumulado,porc_primer_lugar,porc_segundo_lugar,porc_tercer_lugar")
         .in("idhip", ids);
       return (data ?? []) as Hipodromo[];
     },
@@ -151,8 +154,8 @@ function PollasPage() {
 
   // Totales de jugadas del día para este hipódromo
   const { data: stats } = useQuery({
-    enabled: !!selectedHip,
-    queryKey: ["pollas-stats", selectedHip, fechac],
+    enabled: !!selectedHip && !!hip,
+    queryKey: ["pollas-stats", selectedHip, fechac, hip?.porc_retener, hip?.porc_acumulado, hip?.porc_primer_lugar, hip?.porc_segundo_lugar, hip?.porc_tercer_lugar, hip?.acumulado],
     queryFn: async () => {
       const { data } = await supabase
         .from("pollas")
@@ -160,8 +163,14 @@ function PollasPage() {
         .eq("idhip", selectedHip!)
         .eq("fechac", fechac);
       const total = (data ?? []).reduce((s, r) => s + Number(r.monto), 0);
+      const retencion = total * Number(hip?.porc_retener ?? 0) / 100;
+      const aportAcum = total * Number(hip?.porc_acumulado ?? 0) / 100;
+      const acumTotal = Number(hip?.acumulado ?? 0) + aportAcum;
       return {
         cantidad: data?.length ?? 0,
+        total,
+        retencion,
+        acumulado: acumTotal,
         premio1: total * Number(hip?.porc_primer_lugar ?? 0) / 100,
         premio2: total * Number(hip?.porc_segundo_lugar ?? 0) / 100,
         premio3: total * Number(hip?.porc_tercer_lugar ?? 0) / 100,
@@ -290,11 +299,13 @@ function PollasPage() {
       {hip && (
         <>
           {/* Estadísticas */}
-          <div className="grid gap-3 sm:grid-cols-4">
-            <StatCard label="Pollas jugadas" value={String(stats?.cantidad ?? 0)} />
-            <StatCard label="1er Lugar" value={`Bs ${fmt.format(stats?.premio1 ?? 0)}`} />
-            <StatCard label="2do Lugar" value={`Bs ${fmt.format(stats?.premio2 ?? 0)}`} />
-            <StatCard label="3er Lugar" value={`Bs ${fmt.format(stats?.premio3 ?? 0)}`} />
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <StatCard label={`Total jugado (${stats?.cantidad ?? 0} pollas)`} value={`Bs ${fmt.format(stats?.total ?? 0)}`} />
+            <StatCard label={`Retención Casa (${Number(hip.porc_retener).toFixed(0)}%)`} value={`Bs ${fmt.format(stats?.retencion ?? 0)}`} />
+            <StatCard label={`Acumulado (+${Number(hip.porc_acumulado).toFixed(0)}%)`} value={`Bs ${fmt.format(stats?.acumulado ?? 0)}`} />
+            <StatCard label={`1er Lugar (${Number(hip.porc_primer_lugar).toFixed(0)}%)`} value={`Bs ${fmt.format(stats?.premio1 ?? 0)}`} />
+            <StatCard label={`2do Lugar (${Number(hip.porc_segundo_lugar).toFixed(0)}%)`} value={`Bs ${fmt.format(stats?.premio2 ?? 0)}`} />
+            <StatCard label={`3er Lugar (${Number(hip.porc_tercer_lugar).toFixed(0)}%)`} value={`Bs ${fmt.format(stats?.premio3 ?? 0)}`} />
           </div>
 
           {carreras.length === 0 ? (

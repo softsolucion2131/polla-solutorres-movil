@@ -244,6 +244,8 @@ function HipodromoForm({
       venxcar,
     });
     if (!parsed.success) { toast.error(parsed.error.issues[0].message); return; }
+    const suma = parsed.data.porc_retener + parsed.data.porc_acumulado + parsed.data.porc_primer_lugar + parsed.data.porc_segundo_lugar + parsed.data.porc_tercer_lugar;
+    if (Math.abs(suma - 100) > 0.01) { toast.error(`Los porcentajes deben sumar 100% (actual: ${suma.toFixed(2)}%)`); return; }
     onSubmit(parsed.data);
   };
 
@@ -281,31 +283,45 @@ function HipodromoForm({
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
-        <div className="space-y-2">
-          <Label htmlFor="h-ret">% Retener</Label>
-          <Input id="h-ret" type="number" step="0.01" min="0" max="100" value={porcRetener} onChange={(e) => setPorcRetener(e.target.value)} />
+      <div className="rounded-md border border-border bg-muted/30 p-3">
+        <div className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+          Distribución de la jugada (debe sumar 100%)
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="h-p1">% 1er lugar</Label>
-          <Input id="h-p1" type="number" step="0.01" min="0" max="100" value={porc1} onChange={(e) => setPorc1(e.target.value)} />
+        <div className="grid grid-cols-3 gap-3">
+          <div className="space-y-2">
+            <Label htmlFor="h-ret">% Retención Casa</Label>
+            <Input id="h-ret" type="number" step="0.01" min="0" max="100" value={porcRetener} onChange={(e) => setPorcRetener(e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="h-pa">% Aporte al Acumulado</Label>
+            <Input id="h-pa" type="number" step="0.01" min="0" max="100" value={porcAcum} onChange={(e) => setPorcAcum(e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="h-acum">Pote Acumulado (Bs)</Label>
+            <Input id="h-acum" type="number" step="0.01" min="0" value={acumulado} onChange={(e) => setAcumulado(e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="h-p1">% 1er lugar</Label>
+            <Input id="h-p1" type="number" step="0.01" min="0" max="100" value={porc1} onChange={(e) => setPorc1(e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="h-p2">% 2do lugar</Label>
+            <Input id="h-p2" type="number" step="0.01" min="0" max="100" value={porc2} onChange={(e) => setPorc2(e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="h-p3">% 3er lugar</Label>
+            <Input id="h-p3" type="number" step="0.01" min="0" max="100" value={porc3} onChange={(e) => setPorc3(e.target.value)} />
+          </div>
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="h-p2">% 2do lugar</Label>
-          <Input id="h-p2" type="number" step="0.01" min="0" max="100" value={porc2} onChange={(e) => setPorc2(e.target.value)} />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="h-p3">% 3er lugar</Label>
-          <Input id="h-p3" type="number" step="0.01" min="0" max="100" value={porc3} onChange={(e) => setPorc3(e.target.value)} />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="h-pa">% Acumulado</Label>
-          <Input id="h-pa" type="number" step="0.01" min="0" max="100" value={porcAcum} onChange={(e) => setPorcAcum(e.target.value)} />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="h-acum">Acumulado</Label>
-          <Input id="h-acum" type="number" step="0.01" min="0" value={acumulado} onChange={(e) => setAcumulado(e.target.value)} />
-        </div>
+        {(() => {
+          const suma = Number(porcRetener || 0) + Number(porcAcum || 0) + Number(porc1 || 0) + Number(porc2 || 0) + Number(porc3 || 0);
+          const ok = Math.abs(suma - 100) < 0.01;
+          return (
+            <div className={`mt-2 text-xs ${ok ? "text-primary" : "text-destructive"}`}>
+              Suma actual: {suma.toFixed(2)}% {ok ? "✓" : "— debe ser 100%"}
+            </div>
+          );
+        })()}
       </div>
 
       <div className="grid grid-cols-4 gap-3">
