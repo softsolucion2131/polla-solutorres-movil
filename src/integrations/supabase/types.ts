@@ -718,6 +718,15 @@ export type Database = {
         }
         Returns: boolean
       }
+      siguiente_no_retirado: {
+        Args: {
+          _carrera: number
+          _fechac: string
+          _idhip: string
+          _nro: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       app_role: "admin" | "agency" | "player"
