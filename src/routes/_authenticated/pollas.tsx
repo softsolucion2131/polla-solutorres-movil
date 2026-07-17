@@ -45,9 +45,18 @@ type Carrera = {
   ejemplares: { nroejem: string; nombreeje: string | null; ret_ok: boolean }[];
 };
 
+// Genera la fecha 'YYYY-MM-DD' estricta para la zona horaria de Caracas, Venezuela
 function todayISO() {
-  const d = new Date();
-  return d.toISOString().slice(0, 10);
+  const caracasString = new Date().toLocaleString("en-US", {
+    timeZone: "America/Caracas",
+  });
+  const d = new Date(caracasString);
+  
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  
+  return `${year}-${month}-${day}`;
 }
 
 function PollasPage() {
@@ -56,7 +65,9 @@ function PollasPage() {
   const [selectedHip, setSelectedHip] = useState<string | null>(null);
   const [selections, setSelections] = useState<Record<number, Set<string>>>({});
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const fechac = todayISO();
+  
+  // Guardamos la fecha del día de forma estática en el estado inicial para evitar updates molestos en el render
+  const [fechac] = useState(() => todayISO());
 
   // Perfil (balance, agency_id)
   const { data: profile } = useQuery({
@@ -178,20 +189,48 @@ function PollasPage() {
     },
   });
 
-  // Últimas jugadas del jugador
+  // Todas las pollas del evento para escrutinio público
   const { data: misJugadas = [] } = useQuery({
     enabled: !!user && !!selectedHip,
-    queryKey: ["pollas-mias", user?.id, selectedHip, fechac],
+    queryKey: ["pollas-mias", selectedHip, fechac],
     queryFn: async () => {
-      const { data } = await supabase
+      // 1. Obtenemos las jugadas sin forzar un JOIN ambiguo que rompa en PostgREST (Error 400)
+      const { data: pollasData, error: pollasError } = await supabase
         .from("pollas")
-        .select("id,created_at,combinacion,puntos,lugar,premio,estado,monto")
-        .eq("user_id", user!.id)
+        .select("id, user_id, created_at, combinacion, puntos, lugar, premio, estado, monto")
         .eq("idhip", selectedHip!)
         .eq("fechac", fechac)
+        .order("puntos", { ascending: false })
         .order("created_at", { ascending: false })
-        .limit(20);
-      return data ?? [];
+        .limit(50);
+
+      if (pollasError) throw pollasError;
+      if (!pollasData || pollasData.length === 0) return [];
+
+      // 2. Extraemos los IDs de usuario únicos involucrados en el set de datos
+      const userIds = Array.from(new Set(pollasData.map((p) => p.user_id)));
+
+      // 3. Consultamos sus perfiles de forma limpia y plana usando los campos reales de tu DB ('pseudonimo', 'email')
+      const { data: profilesData } = await supabase
+        .from("profiles")
+        .select("id, pseudonimo, email")
+        .in("id", userIds);
+
+      // Creamos un diccionario eficiente para asociar la información rápidamente
+      const userMap = new Map(
+        profilesData?.map((u) => {
+          const display = u.pseudonimo || u.email?.split("@")[0] || "Usuario";
+          return [u.id, display];
+        }) ?? []
+      );
+
+      // 4. Devolvemos el array mapeado respetando el formato anterior para mantener el renderizado del componente intacto
+      return pollasData.map((polla) => ({
+        ...polla,
+        profiles: {
+          username: userMap.get(polla.user_id) || "Usuario",
+        },
+      }));
     },
   });
 
@@ -213,26 +252,53 @@ function PollasPage() {
       if (monto <= 0) throw new Error("Debes seleccionar al menos un ejemplar por carrera");
       if ((profile?.balance ?? 0) < monto) throw new Error("Saldo insuficiente");
 
-      const combinacion = carreras.map((c) => ({
+      const listasPorCarrera = carreras.map((c) => ({
         carrera: c.carrera,
         nros: Array.from(selections[c.idprog] ?? []).sort(
           (a, b) => Number(a) - Number(b),
         ),
       }));
 
-      const { error } = await supabase.from("pollas").insert({
+      const generarCombinacionesIndividuales = (
+        index: number,
+        caminoActual: { carrera: number; nros: string[] }[]
+      ): { carrera: number; nros: string[] }[][] => {
+        if (index === listasPorCarrera.length) {
+          return [caminoActual];
+        }
+
+        const carreraActual = listasPorCarrera[index];
+        let resultados: { carrera: number; nros: string[] }[][] = [];
+
+        for (const nro of carreraActual.nros) {
+          const nuevoCamino = [
+            ...caminoActual,
+            { carrera: carreraActual.carrera, nros: [nro] },
+          ];
+          resultados = resultados.concat(
+            generarCombinacionesIndividuales(index + 1, nuevoCamino)
+          );
+        }
+
+        return resultados;
+      };
+
+      const ticketsIndividuales = generarCombinacionesIndividuales(0, []);
+
+      const filasAInsertar = ticketsIndividuales.map((comb) => ({
         user_id: user.id,
         agency_id: profile?.agency_id ?? null,
         idhip: hip.idhip,
         fechac,
-        combinacion,
-        combinaciones,
-        monto,
+        combinacion: comb,
+        combinaciones: 1,
+        monto: costo,
         estado: "proceso",
-      });
+      }));
+
+      const { error } = await supabase.from("pollas").insert(filasAInsertar);
       if (error) throw error;
 
-      // Debitar saldo del jugador
       const { error: e2 } = await supabase
         .from("profiles")
         .update({ balance: Number(profile?.balance ?? 0) - monto })
@@ -240,7 +306,7 @@ function PollasPage() {
       if (e2) throw e2;
     },
     onSuccess: () => {
-      toast.success("Polla sellada correctamente");
+      toast.success("Polla(s) sellada(s) correctamente de forma individual");
       setSelections({});
       setConfirmOpen(false);
       qc.invalidateQueries({ queryKey: ["pollas-mias"] });
@@ -379,16 +445,17 @@ function PollasPage() {
             </>
           )}
 
-          {/* Últimas jugadas */}
+          {/* Escrutinio y tabla general de pollas */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Últimas jugadas</CardTitle>
+              <CardTitle className="text-base">Jugadas del Evento (Escrutinio Público)</CardTitle>
             </CardHeader>
             <CardContent className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border text-left text-xs uppercase tracking-wider text-muted-foreground">
                     <th className="py-2 pr-3">Hora</th>
+                    <th className="py-2 pr-3">Usuario</th>
                     <th className="py-2 pr-3">Combinación</th>
                     <th className="py-2 pr-3 text-right">Monto</th>
                     <th className="py-2 pr-3 text-right">Pts</th>
@@ -400,12 +467,12 @@ function PollasPage() {
                 <tbody>
                   {misJugadas.length === 0 && (
                     <tr>
-                      <td colSpan={7} className="py-6 text-center text-muted-foreground">
+                      <td colSpan={8} className="py-6 text-center text-muted-foreground">
                         No hay jugadas registradas para este evento
                       </td>
                     </tr>
                   )}
-                  {misJugadas.map((j) => (
+                  {misJugadas.map((j: any) => (
                     <tr key={j.id} className="border-b border-border/50">
                       <td className="py-2 pr-3 font-mono text-xs">
                         {new Date(j.created_at).toLocaleTimeString("es-VE", {
@@ -413,7 +480,10 @@ function PollasPage() {
                           minute: "2-digit",
                         })}
                       </td>
-                      <td className="py-2 pr-3 font-mono text-xs">
+                      <td className="py-2 pr-3 text-xs font-semibold max-w-[120px] truncate text-muted-foreground">
+                        {j.profiles?.username || "Sistema"}
+                      </td>
+                      <td className="py-2 pr-3 font-mono text-xs font-medium">
                         {(j.combinacion as any[])
                           .map((c) => `${c.carrera}:[${c.nros.join(",")}]`)
                           .join("  ")}
@@ -421,7 +491,7 @@ function PollasPage() {
                       <td className="py-2 pr-3 text-right font-mono">
                         {fmt.format(Number(j.monto))}
                       </td>
-                      <td className="py-2 pr-3 text-right">{j.puntos}</td>
+                      <td className="py-2 pr-3 text-right font-semibold">{j.puntos}</td>
                       <td className="py-2 pr-3 text-right">{j.lugar ?? "-"}</td>
                       <td className="py-2 pr-3 text-right font-mono">
                         {Number(j.premio) > 0 ? fmt.format(Number(j.premio)) : "-"}
