@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/table";
 import { Zap, Save, Trash2 } from "lucide-react";
 
-export const Route = createFileRoute("/_authenticated/admin/cargar-programa")({
+export const Route = createFileRoute("/_authenticated/admin/cargar-programa1")({
   component: CargarProgramaPage,
 });
 
@@ -27,35 +27,25 @@ function parsePrograma(text: string): Ejemplar[] {
   const lines = text.split(/\r?\n/).map((l) => l.trim());
   const out: Ejemplar[] = [];
   let current: Ejemplar | null = null;
+  let expectName = false;
 
   for (const line of lines) {
     if (!line) continue;
-
-    // Detecta si la línea es únicamente un número de ejemplar (ej: "1", "2", "6")
     const numMatch = /^(\d{1,2})[a-zA-Z]?$/.exec(line);
-    
     if (numMatch) {
       if (current) out.push(current);
       current = { nroejem: numMatch[1], nombreeje: "", retirado: false };
+      expectName = true;
       continue;
     }
-
-    if (current) {
-      // Si aún no tiene asignado el nombre del ejemplar y no es la etiqueta "jockey:" o "RETIRADO"
-      if (!current.nombreeje && !/^jockey\s*:/i.test(line) && !/retirad[oa]/i.test(line)) {
-        current.nombreeje = line;
-        continue;
-      }
-
-      // Si cualquier línea siguiente del mismo bloque contiene "RETIRADO" o "Jockey: RETIRADO"
-      if (/retirad[oa]/i.test(line)) {
-        current.retirado = true;
-      }
+    if (/^jockey\s*:/i.test(line)) continue;
+    if (current && expectName) {
+      current.nombreeje = line;
+      if (/^retirad[oa]$/i.test(line.trim())) current.retirado = true;
+      expectName = false;
     }
   }
-
   if (current) out.push(current);
-
   return out.filter((e) => e.nombreeje);
 }
 
@@ -84,14 +74,17 @@ function CargarProgramaPage() {
   const { data: hipodromos = [] } = useQuery({
     queryKey: ["hipodromos-activos"],
     queryFn: async () => {
+      // Traemos todos los campos para evitar errores si cambió el nombre de 'nomhip' o 'activo_ok'
       const { data, error } = await supabase
         .from("hipodromos")
         .select("*");
       
       if (error) throw error;
 
+      // Filtramos dinámicamente: acepta tanto si es activo_ok === 1 como si es activo === true
       const filtrados = (data || []).filter((h: any) => h.activo_ok === 1 || h.activo === true || h.activo_ok === "1");
 
+      // Ordenamos alfabéticamente en JS usando el campo de nombre que exista (nomhip o nombre)
       return filtrados.sort((a: any, b: any) => {
         const nameA = a.nomhip || a.nombre || "";
         const nameB = b.nomhip || b.nombre || "";
@@ -154,7 +147,6 @@ function CargarProgramaPage() {
         idprog = data.idprog;
       }
 
-      // Mapeo hacia la tabla detprog (ret_ok = true cuando está retirado)
       const rows = parsed.map((e) => ({
         idprog,
         idhip,
@@ -182,6 +174,7 @@ function CargarProgramaPage() {
       qc.invalidateQueries({ queryKey: ["programa"] });
       setCarrera(String(nroCarrera + 1));
       
+      // Si era válida, incrementamos sugeridamente la siguiente posición de la polla
       if (validaPolla) {
         setValidaNro(String(nroValidaFinal + 1));
       }
@@ -275,7 +268,7 @@ function CargarProgramaPage() {
                 value={texto}
                 onChange={(e) => setTexto(e.target.value)}
                 rows={12}
-                placeholder={`1\nNo Mor Stones\nJockey: Joezer Rangel\n2\nIt's Authentic\nJockey: RETIRADO`}
+                placeholder={`1\nNo Mor Stones\nJockey: Joezer Rangel\n2\nIt's Authentic\n...`}
                 className="font-mono text-sm"
               />
               <div className="mt-3 flex gap-2">
@@ -298,7 +291,6 @@ function CargarProgramaPage() {
                     <TableRow>
                       <TableHead className="w-20">Nº</TableHead>
                       <TableHead>Ejemplar</TableHead>
-                      <TableHead className="w-28 text-center">Estado</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -306,17 +298,6 @@ function CargarProgramaPage() {
                       <TableRow key={i}>
                         <TableCell className="font-mono font-bold">{e.nroejem}</TableCell>
                         <TableCell>{e.nombreeje}</TableCell>
-                        <TableCell className="text-center">
-                          {e.retirado ? (
-                            <span className="rounded bg-destructive/20 px-2 py-0.5 text-xs font-bold text-destructive">
-                              RETIRADO
-                            </span>
-                          ) : (
-                            <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-xs font-bold text-emerald-500">
-                              CORRE
-                            </span>
-                          )}
-                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

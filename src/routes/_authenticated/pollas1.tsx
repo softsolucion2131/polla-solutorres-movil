@@ -13,9 +13,9 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Trophy, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Trophy, AlertCircle } from "lucide-react";
 
-export const Route = createFileRoute("/_authenticated/pollas")({
+export const Route = createFileRoute("/_authenticated/pollas1")({
   component: PollasPage,
 });
 
@@ -59,59 +59,6 @@ function todayISO() {
   return `${year}-${month}-${day}`;
 }
 
-// Evalúa si una carrera específica ya cerró por hora de Caracas
-function esCarreraCerrada(fechac: string, horac: string | null): boolean {
-  if (!fechac || !horac) return false;
-
-  try {
-    const caracasNowString = new Date().toLocaleString("en-US", {
-      timeZone: "America/Caracas",
-    });
-    const now = new Date(caracasNowString);
-
-    const partesHora = horac.trim().split(":");
-    if (partesHora.length < 2) return false;
-
-    const horaStr = partesHora[0];
-    const minStr = partesHora[1];
-    const [year, month, day] = fechac.split("-").map(Number);
-    const cierre = new Date(year, month - 1, day, Number(horaStr), Number(minStr), 0);
-
-    return now.getTime() >= cierre.getTime();
-  } catch {
-    return false;
-  }
-}
-
-// Formateador de combinación estilo Opción B: C3: [6] | C4: [1] ...
-function formatearCombinacion(comb: any): string {
-  if (!comb) return "-";
-  let parsed = comb;
-
-  if (typeof comb === "string") {
-    try {
-      parsed = JSON.parse(comb);
-    } catch {
-      return comb;
-    }
-  }
-
-  if (Array.isArray(parsed)) {
-    return parsed
-      .map((item: any) => {
-        const nros = Array.isArray(item.nros)
-          ? item.nros.join(",")
-          : item.nros || item.ejemplar || item.num || "-";
-        const carrera = item.carrera || item.c;
-        return carrera ? `C${carrera}: [${nros}]` : `[${nros}]`;
-      })
-      .filter(Boolean)
-      .join("  |  ");
-  }
-
-  return String(comb);
-}
-
 function PollasPage() {
   const { user } = useAuth();
   const qc = useQueryClient();
@@ -119,26 +66,22 @@ function PollasPage() {
   const [selections, setSelections] = useState<Record<number, Set<string>>>({});
   const [confirmOpen, setConfirmOpen] = useState(false);
   
+  // Guardamos la fecha del día de forma estática en el estado inicial para evitar updates molestos en el render
   const [fechac] = useState(() => todayISO());
 
-  // Perfil (balance/saldo, agency_id, role)
+  // Perfil (balance, agency_id)
   const { data: profile } = useQuery({
     enabled: !!user,
     queryKey: ["pollas-profile", user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from("profiles")
-        .select("*")
+        .select("balance, agency_id")
         .eq("id", user!.id)
         .maybeSingle();
-      
-      if (error) throw error;
       return data;
     },
   });
-
-  const userBalance = Number(profile?.balance ?? profile?.saldo ?? 0);
-  const isAdmin = profile?.role === "admin";
 
   // Hipódromos con programa válido hoy
   const { data: hipodromos = [] } = useQuery({
@@ -203,12 +146,6 @@ function PollasPage() {
   const hip = hipodromos.find((h) => h.idhip === selectedHip);
   const costo = Number(hip?.cos_bol ?? 0);
 
-  // La venta total se cierra si la 1ra válida del programa ya cerró por hora
-  const primeraValidaCerrada = useMemo(() => {
-    if (carreras.length === 0) return false;
-    return esCarreraCerrada(fechac, carreras[0].horac);
-  }, [carreras, fechac]);
-
   const { combinaciones, seleccionadas, monto } = useMemo(() => {
     let combo = 1;
     let sel = 0;
@@ -227,7 +164,7 @@ function PollasPage() {
     };
   }, [carreras, selections, costo]);
 
-  // Totales de jugadas del día
+  // Totales de jugadas del día para este hipódromo
   const { data: stats } = useQuery({
     enabled: !!selectedHip && !!hip,
     queryKey: ["pollas-stats", selectedHip, fechac, hip?.porc_retener, hip?.porc_acumulado, hip?.porc_primer_lugar, hip?.porc_segundo_lugar, hip?.porc_tercer_lugar, hip?.acumulado],
@@ -253,7 +190,7 @@ function PollasPage() {
     },
   });
 
-  // Todas las pollas para escrutinio público
+  // Todas las pollas del evento para escrutinio público
   const { data: misJugadas = [] } = useQuery({
     enabled: !!user && !!selectedHip,
     queryKey: ["pollas-mias", selectedHip, fechac],
@@ -293,8 +230,9 @@ function PollasPage() {
     },
   });
 
-  const toggle = (idprog: number, nro: string, retirado: boolean, cerrada: boolean) => {
-    if (retirado || cerrada) return;
+  const toggle = (idprog: number, nro: string, retirado: boolean, esPrimeraValida: boolean) => {
+    // Si el ejemplar está retirado o si pertenece a la primera válida (ya cerrada), no hacer nada
+    if (retirado || esPrimeraValida) return;
     setSelections((prev) => {
       const next = { ...prev };
       const set = new Set(next[idprog] ?? []);
@@ -308,13 +246,12 @@ function PollasPage() {
   const sellar = useMutation({
     mutationFn: async () => {
       if (!user || !hip) throw new Error("Sesión no válida");
-
-      if (carreras.length > 0 && esCarreraCerrada(fechac, carreras[0].horac)) {
-        throw new Error("El proceso de sellado ha cerrado para este evento (1ª Válida culminada).");
-      }
+      
+      // Control de seguridad extra: verificar que la primera carrera ya no permita el ingreso de apuestas
+      throw new Error("El proceso de sellado ha cerrado para este evento (1ª Válida culminada).");
 
       if (monto <= 0) throw new Error("Debes seleccionar al menos un ejemplar por carrera");
-      if (userBalance < monto) throw new Error("Saldo insuficiente");
+      if ((profile?.balance ?? 0) < monto) throw new Error("Saldo insuficiente");
 
       const listasPorCarrera = carreras.map((c) => ({
         carrera: c.carrera,
@@ -357,20 +294,15 @@ function PollasPage() {
         combinacion: comb,
         combinaciones: 1,
         monto: costo,
-        puntos: 0,
         estado: "proceso",
       }));
 
       const { error } = await supabase.from("pollas").insert(filasAInsertar);
       if (error) throw error;
 
-      // Descuento del saldo del usuario
-      const nuevoSaldo = userBalance - monto;
-      const fieldToUpdate = profile?.balance !== undefined ? { balance: nuevoSaldo } : { saldo: nuevoSaldo };
-
       const { error: e2 } = await supabase
         .from("profiles")
-        .update(fieldToUpdate)
+        .update({ balance: Number(profile?.balance ?? 0) - monto })
         .eq("id", user.id);
       if (e2) throw e2;
     },
@@ -397,7 +329,7 @@ function PollasPage() {
         <div className="rounded-lg border border-border bg-card px-4 py-2 text-right">
           <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Disponible</div>
           <div className="font-mono text-lg font-bold text-primary">
-            Bs {fmt.format(userBalance)}
+            Bs {fmt.format(Number(profile?.balance ?? 0))}
           </div>
         </div>
       </div>
@@ -433,16 +365,11 @@ function PollasPage() {
 
       {hip && (
         <>
-          {/* Estadísticas de Premios */}
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {/* Estadísticas */}
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <StatCard label={`Total jugado (${stats?.cantidad ?? 0} pollas)`} value={`Bs ${fmt.format(stats?.total ?? 0)}`} />
-            
-            {isAdmin && (
-              <StatCard label={`Retención Casa (${Number(hip.porc_retener).toFixed(0)}%)`} value={`Bs ${fmt.format(stats?.retencion ?? 0)}`} />
-            )}
-
-            <StatCard label={`Acumulado (30 Pts - +${Number(hip.porc_acumulado).toFixed(0)}%)`} value={`Bs ${fmt.format(stats?.acumulado ?? 0)}`} />
-            
+            <StatCard label={`Retención Casa (${Number(hip.porc_retener).toFixed(0)}%)`} value={`Bs ${fmt.format(stats?.retencion ?? 0)}`} />
+            <StatCard label={`Acumulado (+${Number(hip.porc_acumulado).toFixed(0)}%)`} value={`Bs ${fmt.format(stats?.acumulado ?? 0)}`} />
             <StatCard label={`1er Lugar (${Number(hip.porc_primer_lugar).toFixed(0)}%)`} value={`Bs ${fmt.format(stats?.premio1 ?? 0)}`} />
             <StatCard label={`2do Lugar (${Number(hip.porc_segundo_lugar).toFixed(0)}%)`} value={`Bs ${fmt.format(stats?.premio2 ?? 0)}`} />
             <StatCard label={`3er Lugar (${Number(hip.porc_tercer_lugar).toFixed(0)}%)`} value={`Bs ${fmt.format(stats?.premio3 ?? 0)}`} />
@@ -458,14 +385,14 @@ function PollasPage() {
             <>
               <div className="space-y-3">
                 {carreras.map((c, idx) => {
-                  const cerrada = esCarreraCerrada(fechac, c.horac);
+                  const esPrimeraValida = idx === 0; // Identifica de forma exacta la primera carrera de la lista
                   return (
-                    <Card key={c.idprog} className={cerrada ? "opacity-65 bg-muted/20" : ""}>
+                    <Card key={c.idprog} className={esPrimeraValida ? "opacity-65" : ""}>
                       <CardHeader className="flex flex-row items-center justify-between gap-3 py-3">
                         <CardTitle className="text-base">
                           <span className="text-primary">{idx + 1}ª Válida</span>{" "}
                           <span className="text-muted-foreground">· Carrera {c.carrera}</span>
-                          {cerrada && (
+                          {esPrimeraValida && (
                             <span className="ml-3 rounded bg-destructive/20 px-2 py-0.5 font-display text-xs font-semibold text-destructive">
                               CERRADA
                             </span>
@@ -479,12 +406,12 @@ function PollasPage() {
                         <div className="grid grid-cols-6 gap-2 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12">
                           {c.ejemplares.map((e) => {
                             const active = selections[c.idprog]?.has(e.nroejem) ?? false;
-                            const isDisabled = e.ret_ok || cerrada;
+                            const isDisabled = e.ret_ok || esPrimeraValida;
                             return (
                               <button
                                 key={e.nroejem}
                                 disabled={isDisabled}
-                                onClick={() => toggle(c.idprog, e.nroejem, e.ret_ok, cerrada)}
+                                onClick={() => toggle(c.idprog, e.nroejem, e.ret_ok, esPrimeraValida)}
                                 title={e.nombreeje ?? ""}
                                 className={`flex h-10 items-center justify-center rounded-md border font-mono text-sm font-bold transition-all ${
                                   isDisabled
@@ -518,17 +445,17 @@ function PollasPage() {
                   </div>
                   <Button
                     size="lg"
-                    disabled={monto <= 0 || sellar.isPending || primeraValidaCerrada}
+                    disabled={true} // Se fuerza el botón deshabilitado puesto que la 1ra válida ya cerró y no se pueden completar tickets
                     onClick={() => setConfirmOpen(true)}
                   >
-                    {primeraValidaCerrada ? "VENTA CERRADA" : "Sellar Polla"}
+                    VENTA CERRADA
                   </Button>
                 </CardContent>
               </Card>
             </>
           )}
 
-          {/* Escrutinio público */}
+          {/* Escrutinio y tabla general de pollas */}
           <Card>
             <CardHeader>
               <CardTitle className="text-base">Jugadas del Evento (Escrutinio Público)</CardTitle>
@@ -542,9 +469,9 @@ function PollasPage() {
                     <th className="py-2 pr-3">Combinación</th>
                     <th className="py-2 pr-3 text-right">Monto</th>
                     <th className="py-2 pr-3 text-right">Pts</th>
-                    <th className="py-2 pr-3 text-center">Lugar</th>
+                    <th className="py-2 pr-3 text-right">Lugar</th>
                     <th className="py-2 pr-3 text-right">Premio</th>
-                    <th className="py-2 text-center">Estado</th>
+                    <th className="py-2">Estado</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -555,55 +482,47 @@ function PollasPage() {
                       </td>
                     </tr>
                   )}
-                  {misJugadas.map((j: any) => {
-                    const lugarNum = Number(j.lugar);
-                    const pts = j.puntos ?? 0;
-                    return (
-                      <tr key={j.id} className="border-b border-border/50">
-                        <td className="py-2 pr-3 font-mono text-xs">
-                          {new Date(j.created_at).toLocaleTimeString("es-VE", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </td>
-                        <td className="py-2 pr-3 text-xs font-semibold max-w-[120px] truncate text-muted-foreground">
-                          {j.profiles?.username || "Sistema"}
-                        </td>
-                        <td className="py-2 pr-3 font-mono text-xs font-medium text-emerald-400">
-                          {formatearCombinacion(j.combinacion)}
-                        </td>
-                        <td className="py-2 pr-3 text-right font-mono">
-                          {fmt.format(Number(j.monto))}
-                        </td>
-                        <td className="py-2 pr-3 text-right font-bold text-cyan-400">{pts}</td>
-                        <td className="py-2 pr-3 text-center">
-                          {lugarNum === 1 && <span className="text-amber-400 font-bold">1er 🏆</span>}
-                          {lugarNum === 2 && <span className="text-slate-300 font-bold">2do 🥈</span>}
-                          {lugarNum === 3 && <span className="text-amber-700 font-bold">3er 🥉</span>}
-                          {(!lugarNum || lugarNum > 3) && <span className="text-muted-foreground">-</span>}
-                        </td>
-                        <td className="py-2 pr-3 text-right font-mono font-bold text-emerald-400">
-                          {Number(j.premio) > 0 ? fmt.format(Number(j.premio)) : "-"}
-                        </td>
-                        <td className="py-2 text-center">
-                          <span
-                            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider ${
-                              j.estado === "pagado" || j.estado === "acreditado"
-                                ? "bg-green-500/20 text-green-400"
-                                : j.estado === "ganador"
-                                  ? "bg-yellow-500/20 text-yellow-400"
-                                  : j.estado === "perdedor"
-                                    ? "bg-red-500/20 text-red-400"
-                                    : "bg-muted text-muted-foreground"
-                            }`}
-                          >
-                            {(j.estado === "pagado" || j.estado === "acreditado") && <CheckCircle2 className="h-3 w-3" />}
-                            {j.estado || "proceso"}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                  {misJugadas.map((j: any) => (
+                    <tr key={j.id} className="border-b border-border/50">
+                      <td className="py-2 pr-3 font-mono text-xs">
+                        {new Date(j.created_at).toLocaleTimeString("es-VE", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </td>
+                      <td className="py-2 pr-3 text-xs font-semibold max-w-[120px] truncate text-muted-foreground">
+                        {j.profiles?.username || "Sistema"}
+                      </td>
+                      <td className="py-2 pr-3 font-mono text-xs font-medium">
+                        {(j.combinacion as any[])
+                          .map((c) => `${c.carrera}:[${c.nros.join(",")}]`)
+                          .join("  ")}
+                      </td>
+                      <td className="py-2 pr-3 text-right font-mono">
+                        {fmt.format(Number(j.monto))}
+                      </td>
+                      <td className="py-2 pr-3 text-right font-semibold">{j.puntos}</td>
+                      <td className="py-2 pr-3 text-right">{j.lugar ?? "-"}</td>
+                      <td className="py-2 pr-3 text-right font-mono">
+                        {Number(j.premio) > 0 ? fmt.format(Number(j.premio)) : "-"}
+                      </td>
+                      <td className="py-2">
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wider ${
+                            j.estado === "pagado"
+                              ? "bg-green-500/20 text-green-500"
+                              : j.estado === "ganador"
+                                ? "bg-yellow-500/20 text-yellow-500"
+                                : j.estado === "perdedor"
+                                  ? "bg-red-500/20 text-red-500"
+                                  : "bg-muted text-muted-foreground"
+                          }`}
+                        >
+                          {j.estado}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </CardContent>
@@ -643,10 +562,10 @@ function PollasPage() {
               Editar
             </Button>
             <Button
-              disabled={sellar.isPending || primeraValidaCerrada}
+              disabled={true}
               onClick={() => sellar.mutate()}
             >
-              {sellar.isPending ? "Sellando..." : primeraValidaCerrada ? "Venta Cerrada" : "Confirmar y Sellar"}
+              Venta Cerrada
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -657,7 +576,7 @@ function PollasPage() {
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-border bg-card p-3 shadow-sm">
+    <div className="rounded-lg border border-border bg-card p-3">
       <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{label}</div>
       <div className="mt-1 font-mono text-lg font-bold">{value}</div>
     </div>

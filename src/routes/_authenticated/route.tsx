@@ -5,7 +5,26 @@ import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { LogOut, LayoutDashboard, Users, Building2, ShieldCheck, Wallet, ListChecks, Inbox, Banknote, HandCoins, Trophy, Percent, ClipboardList, Ticket } from "lucide-react";
+import { 
+  LogOut, 
+  LayoutDashboard, 
+  Users, 
+  Building2, 
+  ShieldCheck, 
+  Wallet, 
+  ListChecks, 
+  Inbox, 
+  Banknote, 
+  HandCoins, 
+  Trophy, 
+  Percent, 
+  ClipboardList, 
+  Ticket, 
+  CheckSquare,
+  UserMinus,
+  FileText,
+  History
+} from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -166,10 +185,12 @@ function AuthedLayout() {
             <>
               <div className="mt-4 px-3 text-xs uppercase tracking-widest text-muted-foreground">Jugador</div>
               <NavLink to="/pollas" icon={<Ticket className="h-4 w-4" />}>Sellar polla</NavLink>
+              <NavLink to="/mis-jugadas" icon={<History className="h-4 w-4" />}>Mis jugadas</NavLink>
               <NavLink to="/deposit" icon={<Wallet className="h-4 w-4" />}>Depositar</NavLink>
               <NavLink to="/my-deposits" icon={<ListChecks className="h-4 w-4" />}>Mis depósitos</NavLink>
               <NavLink to="/withdraw" icon={<HandCoins className="h-4 w-4" />}>Retirar</NavLink>
               <NavLink to="/my-withdrawals" icon={<Banknote className="h-4 w-4" />}>Mis retiros</NavLink>
+              <NavLink to="/estado-cuenta" icon={<FileText className="h-4 w-4" />}>Estado de cuenta</NavLink>
             </>
           )}
 
@@ -201,6 +222,8 @@ function AuthedLayout() {
               <NavLink to="/admin/agencies" icon={<Building2 className="h-4 w-4" />}>Agencias</NavLink>
               <NavLink to="/admin/hipodromos" icon={<Trophy className="h-4 w-4" />}>Hipódromos</NavLink>
               <NavLink to="/admin/cargar-programa" icon={<ClipboardList className="h-4 w-4" />}>Cargar programa</NavLink>
+              <NavLink to="/admin/retirados" icon={<UserMinus className="h-4 w-4" />}>Retirados</NavLink>
+              <NavLink to="/admin/resultados" icon={<CheckSquare className="h-4 w-4" />}>Resultados de polla</NavLink>
               <NavLink to="/admin/users" icon={<Users className="h-4 w-4" />}>Usuarios y roles</NavLink>
             </>
           )}

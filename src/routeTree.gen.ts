@@ -14,16 +14,23 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedWithdrawRouteImport } from './routes/_authenticated/withdraw'
+import { Route as AuthenticatedPollas1RouteImport } from './routes/_authenticated/pollas1'
 import { Route as AuthenticatedPollasRouteImport } from './routes/_authenticated/pollas'
 import { Route as AuthenticatedMyWithdrawalsRouteImport } from './routes/_authenticated/my-withdrawals'
 import { Route as AuthenticatedMyDepositsRouteImport } from './routes/_authenticated/my-deposits'
+import { Route as AuthenticatedMisJugadasRouteImport } from './routes/_authenticated/mis-jugadas'
+import { Route as AuthenticatedEstadoCuentaRouteImport } from './routes/_authenticated/estado-cuenta'
 import { Route as AuthenticatedDepositRouteImport } from './routes/_authenticated/deposit'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAgencyWithdrawalsRouteImport } from './routes/_authenticated/agency/withdrawals'
 import { Route as AuthenticatedAgencyDividendosRouteImport } from './routes/_authenticated/agency/dividendos'
 import { Route as AuthenticatedAgencyDepositsRouteImport } from './routes/_authenticated/agency/deposits'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
+import { Route as AuthenticatedAdminRetiradosRouteImport } from './routes/_authenticated/admin/retirados'
+import { Route as AuthenticatedAdminResultados1RouteImport } from './routes/_authenticated/admin/resultados1'
+import { Route as AuthenticatedAdminResultadosRouteImport } from './routes/_authenticated/admin/resultados'
 import { Route as AuthenticatedAdminHipodromosRouteImport } from './routes/_authenticated/admin/hipodromos'
+import { Route as AuthenticatedAdminCargarPrograma1RouteImport } from './routes/_authenticated/admin/cargar-programa1'
 import { Route as AuthenticatedAdminCargarProgramaRouteImport } from './routes/_authenticated/admin/cargar-programa'
 import { Route as AuthenticatedAdminAgenciesRouteImport } from './routes/_authenticated/admin/agencies'
 
@@ -51,6 +58,11 @@ const AuthenticatedWithdrawRoute = AuthenticatedWithdrawRouteImport.update({
   path: '/withdraw',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPollas1Route = AuthenticatedPollas1RouteImport.update({
+  id: '/pollas1',
+  path: '/pollas1',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedPollasRoute = AuthenticatedPollasRouteImport.update({
   id: '/pollas',
   path: '/pollas',
@@ -67,6 +79,17 @@ const AuthenticatedMyDepositsRoute = AuthenticatedMyDepositsRouteImport.update({
   path: '/my-deposits',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMisJugadasRoute = AuthenticatedMisJugadasRouteImport.update({
+  id: '/mis-jugadas',
+  path: '/mis-jugadas',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedEstadoCuentaRoute =
+  AuthenticatedEstadoCuentaRouteImport.update({
+    id: '/estado-cuenta',
+    path: '/estado-cuenta',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedDepositRoute = AuthenticatedDepositRouteImport.update({
   id: '/deposit',
   path: '/deposit',
@@ -100,10 +123,34 @@ const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
   path: '/admin/users',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminRetiradosRoute =
+  AuthenticatedAdminRetiradosRouteImport.update({
+    id: '/admin/retirados',
+    path: '/admin/retirados',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminResultados1Route =
+  AuthenticatedAdminResultados1RouteImport.update({
+    id: '/admin/resultados1',
+    path: '/admin/resultados1',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminResultadosRoute =
+  AuthenticatedAdminResultadosRouteImport.update({
+    id: '/admin/resultados',
+    path: '/admin/resultados',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminHipodromosRoute =
   AuthenticatedAdminHipodromosRouteImport.update({
     id: '/admin/hipodromos',
     path: '/admin/hipodromos',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminCargarPrograma1Route =
+  AuthenticatedAdminCargarPrograma1RouteImport.update({
+    id: '/admin/cargar-programa1',
+    path: '/admin/cargar-programa1',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAdminCargarProgramaRoute =
@@ -125,13 +172,20 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/deposit': typeof AuthenticatedDepositRoute
+  '/estado-cuenta': typeof AuthenticatedEstadoCuentaRoute
+  '/mis-jugadas': typeof AuthenticatedMisJugadasRoute
   '/my-deposits': typeof AuthenticatedMyDepositsRoute
   '/my-withdrawals': typeof AuthenticatedMyWithdrawalsRoute
   '/pollas': typeof AuthenticatedPollasRoute
+  '/pollas1': typeof AuthenticatedPollas1Route
   '/withdraw': typeof AuthenticatedWithdrawRoute
   '/admin/agencies': typeof AuthenticatedAdminAgenciesRoute
   '/admin/cargar-programa': typeof AuthenticatedAdminCargarProgramaRoute
+  '/admin/cargar-programa1': typeof AuthenticatedAdminCargarPrograma1Route
   '/admin/hipodromos': typeof AuthenticatedAdminHipodromosRoute
+  '/admin/resultados': typeof AuthenticatedAdminResultadosRoute
+  '/admin/resultados1': typeof AuthenticatedAdminResultados1Route
+  '/admin/retirados': typeof AuthenticatedAdminRetiradosRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/agency/deposits': typeof AuthenticatedAgencyDepositsRoute
   '/agency/dividendos': typeof AuthenticatedAgencyDividendosRoute
@@ -143,13 +197,20 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/deposit': typeof AuthenticatedDepositRoute
+  '/estado-cuenta': typeof AuthenticatedEstadoCuentaRoute
+  '/mis-jugadas': typeof AuthenticatedMisJugadasRoute
   '/my-deposits': typeof AuthenticatedMyDepositsRoute
   '/my-withdrawals': typeof AuthenticatedMyWithdrawalsRoute
   '/pollas': typeof AuthenticatedPollasRoute
+  '/pollas1': typeof AuthenticatedPollas1Route
   '/withdraw': typeof AuthenticatedWithdrawRoute
   '/admin/agencies': typeof AuthenticatedAdminAgenciesRoute
   '/admin/cargar-programa': typeof AuthenticatedAdminCargarProgramaRoute
+  '/admin/cargar-programa1': typeof AuthenticatedAdminCargarPrograma1Route
   '/admin/hipodromos': typeof AuthenticatedAdminHipodromosRoute
+  '/admin/resultados': typeof AuthenticatedAdminResultadosRoute
+  '/admin/resultados1': typeof AuthenticatedAdminResultados1Route
+  '/admin/retirados': typeof AuthenticatedAdminRetiradosRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/agency/deposits': typeof AuthenticatedAgencyDepositsRoute
   '/agency/dividendos': typeof AuthenticatedAgencyDividendosRoute
@@ -163,13 +224,20 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/deposit': typeof AuthenticatedDepositRoute
+  '/_authenticated/estado-cuenta': typeof AuthenticatedEstadoCuentaRoute
+  '/_authenticated/mis-jugadas': typeof AuthenticatedMisJugadasRoute
   '/_authenticated/my-deposits': typeof AuthenticatedMyDepositsRoute
   '/_authenticated/my-withdrawals': typeof AuthenticatedMyWithdrawalsRoute
   '/_authenticated/pollas': typeof AuthenticatedPollasRoute
+  '/_authenticated/pollas1': typeof AuthenticatedPollas1Route
   '/_authenticated/withdraw': typeof AuthenticatedWithdrawRoute
   '/_authenticated/admin/agencies': typeof AuthenticatedAdminAgenciesRoute
   '/_authenticated/admin/cargar-programa': typeof AuthenticatedAdminCargarProgramaRoute
+  '/_authenticated/admin/cargar-programa1': typeof AuthenticatedAdminCargarPrograma1Route
   '/_authenticated/admin/hipodromos': typeof AuthenticatedAdminHipodromosRoute
+  '/_authenticated/admin/resultados': typeof AuthenticatedAdminResultadosRoute
+  '/_authenticated/admin/resultados1': typeof AuthenticatedAdminResultados1Route
+  '/_authenticated/admin/retirados': typeof AuthenticatedAdminRetiradosRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/agency/deposits': typeof AuthenticatedAgencyDepositsRoute
   '/_authenticated/agency/dividendos': typeof AuthenticatedAgencyDividendosRoute
@@ -183,13 +251,20 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/dashboard'
     | '/deposit'
+    | '/estado-cuenta'
+    | '/mis-jugadas'
     | '/my-deposits'
     | '/my-withdrawals'
     | '/pollas'
+    | '/pollas1'
     | '/withdraw'
     | '/admin/agencies'
     | '/admin/cargar-programa'
+    | '/admin/cargar-programa1'
     | '/admin/hipodromos'
+    | '/admin/resultados'
+    | '/admin/resultados1'
+    | '/admin/retirados'
     | '/admin/users'
     | '/agency/deposits'
     | '/agency/dividendos'
@@ -201,13 +276,20 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/dashboard'
     | '/deposit'
+    | '/estado-cuenta'
+    | '/mis-jugadas'
     | '/my-deposits'
     | '/my-withdrawals'
     | '/pollas'
+    | '/pollas1'
     | '/withdraw'
     | '/admin/agencies'
     | '/admin/cargar-programa'
+    | '/admin/cargar-programa1'
     | '/admin/hipodromos'
+    | '/admin/resultados'
+    | '/admin/resultados1'
+    | '/admin/retirados'
     | '/admin/users'
     | '/agency/deposits'
     | '/agency/dividendos'
@@ -220,13 +302,20 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/_authenticated/dashboard'
     | '/_authenticated/deposit'
+    | '/_authenticated/estado-cuenta'
+    | '/_authenticated/mis-jugadas'
     | '/_authenticated/my-deposits'
     | '/_authenticated/my-withdrawals'
     | '/_authenticated/pollas'
+    | '/_authenticated/pollas1'
     | '/_authenticated/withdraw'
     | '/_authenticated/admin/agencies'
     | '/_authenticated/admin/cargar-programa'
+    | '/_authenticated/admin/cargar-programa1'
     | '/_authenticated/admin/hipodromos'
+    | '/_authenticated/admin/resultados'
+    | '/_authenticated/admin/resultados1'
+    | '/_authenticated/admin/retirados'
     | '/_authenticated/admin/users'
     | '/_authenticated/agency/deposits'
     | '/_authenticated/agency/dividendos'
@@ -277,6 +366,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWithdrawRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/pollas1': {
+      id: '/_authenticated/pollas1'
+      path: '/pollas1'
+      fullPath: '/pollas1'
+      preLoaderRoute: typeof AuthenticatedPollas1RouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/pollas': {
       id: '/_authenticated/pollas'
       path: '/pollas'
@@ -296,6 +392,20 @@ declare module '@tanstack/react-router' {
       path: '/my-deposits'
       fullPath: '/my-deposits'
       preLoaderRoute: typeof AuthenticatedMyDepositsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/mis-jugadas': {
+      id: '/_authenticated/mis-jugadas'
+      path: '/mis-jugadas'
+      fullPath: '/mis-jugadas'
+      preLoaderRoute: typeof AuthenticatedMisJugadasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/estado-cuenta': {
+      id: '/_authenticated/estado-cuenta'
+      path: '/estado-cuenta'
+      fullPath: '/estado-cuenta'
+      preLoaderRoute: typeof AuthenticatedEstadoCuentaRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/deposit': {
@@ -340,11 +450,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/retirados': {
+      id: '/_authenticated/admin/retirados'
+      path: '/admin/retirados'
+      fullPath: '/admin/retirados'
+      preLoaderRoute: typeof AuthenticatedAdminRetiradosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/resultados1': {
+      id: '/_authenticated/admin/resultados1'
+      path: '/admin/resultados1'
+      fullPath: '/admin/resultados1'
+      preLoaderRoute: typeof AuthenticatedAdminResultados1RouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/resultados': {
+      id: '/_authenticated/admin/resultados'
+      path: '/admin/resultados'
+      fullPath: '/admin/resultados'
+      preLoaderRoute: typeof AuthenticatedAdminResultadosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/hipodromos': {
       id: '/_authenticated/admin/hipodromos'
       path: '/admin/hipodromos'
       fullPath: '/admin/hipodromos'
       preLoaderRoute: typeof AuthenticatedAdminHipodromosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/cargar-programa1': {
+      id: '/_authenticated/admin/cargar-programa1'
+      path: '/admin/cargar-programa1'
+      fullPath: '/admin/cargar-programa1'
+      preLoaderRoute: typeof AuthenticatedAdminCargarPrograma1RouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/cargar-programa': {
@@ -367,13 +505,20 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDepositRoute: typeof AuthenticatedDepositRoute
+  AuthenticatedEstadoCuentaRoute: typeof AuthenticatedEstadoCuentaRoute
+  AuthenticatedMisJugadasRoute: typeof AuthenticatedMisJugadasRoute
   AuthenticatedMyDepositsRoute: typeof AuthenticatedMyDepositsRoute
   AuthenticatedMyWithdrawalsRoute: typeof AuthenticatedMyWithdrawalsRoute
   AuthenticatedPollasRoute: typeof AuthenticatedPollasRoute
+  AuthenticatedPollas1Route: typeof AuthenticatedPollas1Route
   AuthenticatedWithdrawRoute: typeof AuthenticatedWithdrawRoute
   AuthenticatedAdminAgenciesRoute: typeof AuthenticatedAdminAgenciesRoute
   AuthenticatedAdminCargarProgramaRoute: typeof AuthenticatedAdminCargarProgramaRoute
+  AuthenticatedAdminCargarPrograma1Route: typeof AuthenticatedAdminCargarPrograma1Route
   AuthenticatedAdminHipodromosRoute: typeof AuthenticatedAdminHipodromosRoute
+  AuthenticatedAdminResultadosRoute: typeof AuthenticatedAdminResultadosRoute
+  AuthenticatedAdminResultados1Route: typeof AuthenticatedAdminResultados1Route
+  AuthenticatedAdminRetiradosRoute: typeof AuthenticatedAdminRetiradosRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedAgencyDepositsRoute: typeof AuthenticatedAgencyDepositsRoute
   AuthenticatedAgencyDividendosRoute: typeof AuthenticatedAgencyDividendosRoute
@@ -383,13 +528,21 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDepositRoute: AuthenticatedDepositRoute,
+  AuthenticatedEstadoCuentaRoute: AuthenticatedEstadoCuentaRoute,
+  AuthenticatedMisJugadasRoute: AuthenticatedMisJugadasRoute,
   AuthenticatedMyDepositsRoute: AuthenticatedMyDepositsRoute,
   AuthenticatedMyWithdrawalsRoute: AuthenticatedMyWithdrawalsRoute,
   AuthenticatedPollasRoute: AuthenticatedPollasRoute,
+  AuthenticatedPollas1Route: AuthenticatedPollas1Route,
   AuthenticatedWithdrawRoute: AuthenticatedWithdrawRoute,
   AuthenticatedAdminAgenciesRoute: AuthenticatedAdminAgenciesRoute,
   AuthenticatedAdminCargarProgramaRoute: AuthenticatedAdminCargarProgramaRoute,
+  AuthenticatedAdminCargarPrograma1Route:
+    AuthenticatedAdminCargarPrograma1Route,
   AuthenticatedAdminHipodromosRoute: AuthenticatedAdminHipodromosRoute,
+  AuthenticatedAdminResultadosRoute: AuthenticatedAdminResultadosRoute,
+  AuthenticatedAdminResultados1Route: AuthenticatedAdminResultados1Route,
+  AuthenticatedAdminRetiradosRoute: AuthenticatedAdminRetiradosRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedAgencyDepositsRoute: AuthenticatedAgencyDepositsRoute,
   AuthenticatedAgencyDividendosRoute: AuthenticatedAgencyDividendosRoute,
@@ -408,3 +561,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
