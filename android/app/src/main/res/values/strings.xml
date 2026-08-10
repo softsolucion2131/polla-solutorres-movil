@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">polla</string>
+    <string name="title_activity_main">polla</string>
+    <string name="package_name">polla.com.app</string>
+    <string name="custom_url_scheme">polla.com.app</string>
+</resources>
