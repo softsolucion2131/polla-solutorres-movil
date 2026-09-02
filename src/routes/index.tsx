@@ -14,7 +14,7 @@ function Landing() {
           <span className="font-display text-xl font-bold text-foreground">Turf Bet</span>
         </div>
         <nav className="flex items-center gap-2">
-          <Link to="/auth"><Button variant="ghost">Iniciar sesión</Button></Link>
+          <Link to="/auth" search={{ mode: "signin" as const }}><Button variant="ghost">Iniciar sesión</Button></Link>
           <Link to="/auth" search={{ mode: "signup" as const }}>
             <Button>Registrarse</Button>
           </Link>
@@ -37,7 +37,7 @@ function Landing() {
             <Link to="/auth" search={{ mode: "signup" as const }}>
               <Button size="lg" className="shadow-[var(--shadow-glow)]">Crear cuenta gratis</Button>
             </Link>
-            <Link to="/auth">
+            <Link to="/auth" search={{ mode: "signin" as const }}>
               <Button size="lg" variant="outline">Ya tengo cuenta</Button>
             </Link>
           </div>
