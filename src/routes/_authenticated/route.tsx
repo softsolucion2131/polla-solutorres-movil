@@ -23,14 +23,16 @@ import {
   CheckSquare,
   UserMinus,
   FileText,
-  History
+  History,
+  BookOpen
+
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
   beforeLoad: async () => {
     const { data, error } = await supabase.auth.getUser();
-    if (error || !data.user) throw redirect({ to: "/auth" });
+    if (error || !data.user) throw redirect({ to: "/auth", search: { mode: "signin" as const } });
     return { user: data.user };
   },
   component: AuthedLayout,
@@ -167,7 +169,7 @@ function AuthedLayout() {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    router.navigate({ to: "/auth", replace: true });
+    router.navigate({ to: "/auth", search: { mode: "signin" as const }, replace: true });
   };
 
   return (
@@ -180,11 +182,14 @@ function AuthedLayout() {
 
         <nav className="flex flex-col gap-1 text-sm">
           <NavLink to="/dashboard" icon={<LayoutDashboard className="h-4 w-4" />}>Dashboard</NavLink>
+          <NavLink to="/manual" icon={<BookOpen className="h-4 w-4" />}>Manual y tutorial</NavLink>
+
 
           {isPlayer && !isAdmin && !isAgency && (
             <>
               <div className="mt-4 px-3 text-xs uppercase tracking-widest text-muted-foreground">Jugador</div>
               <NavLink to="/pollas" icon={<Ticket className="h-4 w-4" />}>Sellar polla</NavLink>
+              <NavLink to="/animalitos" icon={<Ticket className="h-4 w-4" />}>Animalitos</NavLink>
               <NavLink to="/mis-jugadas" icon={<History className="h-4 w-4" />}>Mis jugadas</NavLink>
               <NavLink to="/deposit" icon={<Wallet className="h-4 w-4" />}>Depositar</NavLink>
               <NavLink to="/my-deposits" icon={<ListChecks className="h-4 w-4" />}>Mis depósitos</NavLink>
